@@ -1,5 +1,6 @@
 import { useEffect, useLayoutEffect, useRef, useState } from "react";
 import { useMoonPhase } from "../hooks/useMoonPhase";
+import { PLANETS, usePlanet, type Planet } from "../hooks/usePlanet";
 import { useTheme } from "../hooks/useTheme";
 import { useI18n } from "../i18n/LanguageContext";
 import { LOCALE, type Lang } from "../i18n/types";
@@ -37,10 +38,31 @@ function LanguageSwitch() {
   );
 }
 
+// One swatch per planet accent; hovering shows the planet's name
+function PlanetSwitch({ planet, onChange, className }: { planet: Planet; onChange: (p: Planet) => void; className?: string }) {
+  const { t } = useI18n();
+  return (
+    <div className={`planet-switch${className ? ` ${className}` : ""}`} role="group" aria-label={t("header.planet")}>
+      {PLANETS.map((p) => (
+        <button
+          key={p}
+          type="button"
+          className={`planet-swatch planet-swatch--${p}`}
+          aria-pressed={planet === p}
+          aria-label={t(`planet.${p}`)}
+          data-tip={t(`planet.${p}`)}
+          onClick={() => onChange(p)}
+        />
+      ))}
+    </div>
+  );
+}
+
 export function Header({ sections, activeId }: HeaderProps) {
   const [menuOpen, setMenuOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
   const { theme, toggle } = useTheme();
+  const { planet, setPlanet } = usePlanet();
   const { t, lang } = useI18n();
   const moon = useMoonPhase();
   const navRef = useRef<HTMLElement>(null);
@@ -110,9 +132,12 @@ export function Header({ sections, activeId }: HeaderProps) {
             </a>
           ))}
           <span className="nav-indicator" ref={indicatorRef} aria-hidden="true" />
+          {/* On phones the header has no room, so the swatches live in the menu */}
+          <PlanetSwitch planet={planet} onChange={setPlanet} className="planet-switch--menu" />
         </nav>
 
         <div className="header-actions">
+          <PlanetSwitch planet={planet} onChange={setPlanet} className="planet-switch--bar" />
           <LanguageSwitch />
           <button
             className="icon-btn theme-btn"

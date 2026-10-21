@@ -1,7 +1,34 @@
 import { useEffect, useState } from "react";
-import { EMAIL, GITHUB_USER } from "../data/content";
+import { EMAIL, GITHUB_USER, LINKEDIN_URL, TIME_ZONE } from "../data/content";
 import { useI18n } from "../i18n/LanguageContext";
+import { Rich } from "../i18n/Rich";
 import { Reveal, SectionTitle } from "./Reveal";
+
+// The time in Portugal, ticking over on the minute
+function LocalTime() {
+  const { t, locale } = useI18n();
+  const [now, setNow] = useState(() => new Date());
+
+  useEffect(() => {
+    let timer: ReturnType<typeof setTimeout>;
+    const tick = () => {
+      setNow(new Date());
+      timer = setTimeout(tick, 60_000 - (Date.now() % 60_000));
+    };
+    timer = setTimeout(tick, 60_000 - (Date.now() % 60_000));
+    return () => clearTimeout(timer);
+  }, []);
+
+  const time = new Intl.DateTimeFormat(locale, { timeZone: TIME_ZONE, hour: "2-digit", minute: "2-digit", hourCycle: "h23" }).format(now);
+  return (
+    <p className="local-time">
+      <i className="fa-regular fa-clock" aria-hidden="true" />
+      <span>
+        <Rich text={t("contact.time", { time })} />
+      </span>
+    </p>
+  );
+}
 
 export function Contact() {
   const [copied, setCopied] = useState(false);
@@ -31,6 +58,7 @@ export function Contact() {
       <Reveal className="contact-card">
         <p className="contact-lead">{t("contact.lead")}</p>
         <p className="contact-text">{t("contact.text")}</p>
+        <LocalTime />
 
         <div className="contact-actions">
           <a className="btn btn-primary" href={`mailto:${EMAIL}`}>
@@ -46,6 +74,11 @@ export function Contact() {
           {GITHUB_USER && (
             <a href={`https://github.com/${GITHUB_USER}`} target="_blank" rel="noopener noreferrer">
               <i className="fa-brands fa-github" aria-hidden="true" /> GitHub
+            </a>
+          )}
+          {LINKEDIN_URL && (
+            <a href={LINKEDIN_URL} target="_blank" rel="noopener noreferrer">
+              <i className="fa-brands fa-linkedin" aria-hidden="true" /> LinkedIn
             </a>
           )}
           <a href={`mailto:${EMAIL}`}>

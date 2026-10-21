@@ -1,15 +1,17 @@
 /* ==========================================================================
    Neobrutalism design system
-   One accent (moon yellow) on neutrals, ink borders, hard offset shadows, no blur.
+   One accent (a planet's colour picked in the header, Venus yellow by default) on neutrals,
+   ink borders, hard offset shadows, no blur.
    Borders and shadows are black ink in both themes. Dark mode (the default;
    light mode via the toggle) uses lifted charcoal greys, so the black still
-   reads, and highlighted cards turn solid yellow.
+   reads, and highlighted cards turn solid accent.
    ========================================================================== */
 
 :root {
-  /* The only colour: yellow marks what should stand out, everything else is neutral */
-  --yellow: #ffd23f;
-  /* Text on yellow is always black */
+  /* The only colour: the accent marks what should stand out, everything else is neutral.
+     Venus yellow by default; the planet picker swaps it (below) */
+  --accent: var(--planet-venus);
+  /* Text on the accent is always black (every planet colour keeps 4.5:1 or more with it) */
   --on-color: #0d0d0d;
 
   /* Theme: dark */
@@ -19,29 +21,28 @@
   --text: #f6f1e7;
   --muted: #c9c4ba;
   --ink: #0d0d0d;
-  /* How strongly highlighted cards are tinted with yellow (dark mode uses solid yellow instead, below) */
+  /* How strongly highlighted cards are tinted with the accent (dark mode uses it solid instead, below) */
   --tint-base: var(--surface);
   --tint: 18%;
   /* Yellow marker behind highlighted text: a thin solid underline in dark mode, a highlighter block in light */
-  --marker: var(--yellow);
+  --marker: var(--accent);
   --marker-top: 86%;
   /* Decorative lines (the hero orbit): black would vanish on charcoal */
   --line: rgba(246, 241, 231, 0.4);
   --dots: rgba(246, 241, 231, 0.07);
   --star: #f6f1e7;
-  --focus: var(--yellow);
+  --focus: var(--accent);
 
-  /* Semantic roles */
-  --accent: var(--yellow);
   /* Only for error messages */
   --danger: #ff5c5c;
 
   /* Moon drawings */
-  --moon: var(--yellow);
+  /* The Moon stays yellow whatever accent is picked */
+  --moon: #ffd23f;
   --moon-dark: #1f1f25;
   --crater: rgba(0, 0, 0, 0.16);
   --planet: var(--surface-2);
-  --ring: var(--yellow);
+  --ring: var(--accent);
 
   /* Shape */
   /* Trying thinner borders and square corners: was 3px / 2px and 12px / 8px / 6px */
@@ -63,19 +64,27 @@
   --snap: 0.15s ease-out;
   /* Overshoots a little, for things that slam into place */
   --bounce: cubic-bezier(0.34, 1.56, 0.64, 1);
+  /* Hover lift: quick, with a small overshoot */
+  --spring: 0.22s var(--bounce);
   color-scheme: dark;
 }
+
+/* Planet accents; the swatches in the header show them too */
+:root { --planet-mercury: #c9c9d1; --planet-earth: #4a8fe7; --planet-venus: #ffd23f; --planet-mars: #e5533d; }
+:root[data-planet="mercury"] { --accent: var(--planet-mercury); }
+:root[data-planet="earth"] { --accent: var(--planet-earth); }
+:root[data-planet="mars"] { --accent: var(--planet-mars); }
 
 :root[data-theme="light"] {
   --bg: #fff6e5;
   --surface: #ffffff;
-  --surface-2: #fff0c9;
+  --surface-2: #eeebe5;
   --text: #0d0d0d;
   --muted: #3f3c37;
   --ink: #0d0d0d;
   --tint-base: #ffffff;
   --tint: 45%;
-  --marker: color-mix(in srgb, var(--yellow) 75%, transparent);
+  --marker: color-mix(in srgb, var(--accent) 75%, transparent);
   --marker-top: 62%;
   --line: var(--ink);
   --dots: rgba(13, 13, 13, 0.12);
@@ -108,7 +117,7 @@ h1, h2, h3 { font-family: var(--display); font-weight: 700; }
 a { color: inherit; text-decoration: none; }
 button, input, select { font: inherit; color: inherit; }
 
-::selection { background: var(--yellow); color: var(--on-color); }
+::selection { background: var(--accent); color: var(--on-color); }
 
 :focus-visible { outline: var(--bw) dashed var(--focus); outline-offset: 4px; }
 section:focus, main:focus { outline: none; }
@@ -132,7 +141,7 @@ section:focus, main:focus { outline: none; }
   padding: 10px 16px;
   border: var(--bw) solid var(--ink);
   border-radius: var(--radius-sm);
-  background: var(--yellow);
+  background: var(--accent);
   color: var(--on-color);
   font-weight: 700;
   box-shadow: var(--shadow-sm);
@@ -152,29 +161,41 @@ main, .site-footer { position: relative; z-index: 1; }
   box-shadow: var(--shadow);
 }
 
-/* Highlighted cards get a yellow tint (the error notice a red one) */
+/* Highlighted cards get an accent tint (the error notice a red one) */
 .skill-card--main, .project-card--featured, .contact-card, .notice {
-  background: color-mix(in srgb, var(--c, var(--yellow)) var(--tint), var(--tint-base));
+  background: color-mix(in srgb, var(--c, var(--accent)) var(--tint), var(--tint-base));
 }
-/* In dark mode a tint turns muddy, so highlighted cards go solid yellow
+/* In dark mode a tint turns muddy, so highlighted cards go solid accent
    and switch to the light palette inside; the contact card stays neutral */
 :root:not([data-theme="light"]) :is(.skill-card--main, .project-card--featured) {
   --text: var(--on-color);
-  --muted: #3f3826;
+  /* Muted text on the accent: mostly black with a hint of it, readable on every planet */
+  --muted: color-mix(in srgb, var(--on-color) 78%, var(--accent));
   --surface: #ffffff;
-  --surface-2: #fff3c4;
-  background: var(--yellow);
+  --surface-2: #f3f1ec;
+  background: var(--accent);
   color: var(--text);
 }
 :root:not([data-theme="light"]) .contact-card { background: var(--surface); }
 
-/* Lift on hover, press flat on click */
+/* Lift on hover (springs up), press flat on click (instant).
+   Hover only on real pointers, so a tap on touch doesn't leave things stuck lifted;
+   keyboard focus gets the same lift */
 .btn, .icon-btn, .filter-btn, .project-card, .skill-card, .mission-card, .socials a, .logos li {
-  transition: translate var(--snap), box-shadow var(--snap), background-color var(--snap);
+  transition: translate var(--spring), box-shadow var(--spring), background-color var(--snap), color var(--snap);
 }
-.btn:hover, .icon-btn:hover, .filter-btn:hover, .socials a:hover { translate: var(--lift); box-shadow: var(--shadow); }
-.btn:active, .icon-btn:active, .filter-btn:active, .socials a:active { translate: var(--press); box-shadow: none; }
-.project-card:hover, .skill-card:hover, .mission-card:hover { translate: var(--lift); box-shadow: var(--shadow-lg); }
+:is(.btn, .icon-btn, .filter-btn, .socials a):focus-visible { translate: var(--lift); box-shadow: var(--shadow); }
+.project-card:has(.stretched-link:focus-visible) { translate: var(--lift); box-shadow: var(--shadow-lg); }
+@media (hover: hover) {
+  :is(.btn, .icon-btn, .filter-btn, .socials a):hover { translate: var(--lift); box-shadow: var(--shadow); }
+  .project-card:hover, .skill-card:hover, .mission-card:hover { translate: var(--lift); box-shadow: var(--shadow-lg); }
+  /* Neutral controls light up in the accent; the filters only darken, since the accent marks the active one */
+  :is(.btn-ghost, .icon-btn, .socials a):hover { background: var(--accent); color: var(--on-color); }
+  .filter-btn:not(.active):hover { background: var(--surface-2); }
+}
+:is(.btn, .icon-btn, .filter-btn, .socials a):active { translate: var(--press); box-shadow: none; transition-duration: 0.05s; }
+/* The whole project card is a link, so it presses too */
+.project-card:active { translate: 0 0; box-shadow: var(--shadow-sm); transition-duration: 0.05s; }
 
 /* Small mono label with a border: tags, chips, badges */
 .chip, .tags li, .project-tech li, .mission-kind, .mission-live, .main-tag, .featured-tag, .project-meta .badge, .filter-count {
@@ -216,7 +237,7 @@ main, .site-footer { position: relative; z-index: 1; }
   font-size: 0.75rem;
   min-height: 1.6em;
   padding: 0 8px;
-  background: var(--yellow);
+  background: var(--accent);
   color: var(--on-color);
   border: var(--bw-sm) solid var(--ink);
   border-radius: var(--radius-xs);
@@ -240,7 +261,7 @@ main, .site-footer { position: relative; z-index: 1; }
   inset: 0 0 auto;
   z-index: 11;
   height: 6px;
-  background: var(--yellow);
+  background: var(--accent);
   border-bottom: var(--bw-sm) solid var(--ink);
   transform-origin: left;
   transform: scaleX(0);
@@ -282,19 +303,20 @@ main, .site-footer { position: relative; z-index: 1; }
   border-radius: var(--radius-sm);
   font-size: 0.93rem;
   font-weight: 600;
-  transition: color var(--snap), border-color var(--snap);
+  transition: color var(--snap), border-color var(--snap), background-color var(--snap);
 }
 .nav a:hover { border-color: var(--ink); }
+.nav a:not(.active):hover { background: var(--surface-2); }
 .nav a.active { color: var(--on-color); }
 
-/* A yellow block behind the active link; slides between links */
+/* An accent block behind the active link; slides between links */
 .nav-indicator {
   position: absolute;
   left: 0;
   top: 0;
   bottom: 0;
   width: 0;
-  background: var(--yellow);
+  background: var(--accent);
   border: var(--bw-sm) solid var(--ink);
   border-radius: var(--radius-sm);
   box-shadow: var(--shadow-sm);
@@ -305,6 +327,50 @@ main, .site-footer { position: relative; z-index: 1; }
 .nav-indicator.visible { opacity: 1; }
 
 .header-actions { display: flex; align-items: center; gap: 8px; }
+
+/* Planet swatches: round buttons, the chosen one gets an ink ring */
+.planet-switch { display: flex; align-items: center; gap: 6px; }
+.planet-swatch {
+  position: relative;
+  width: 20px;
+  height: 20px;
+  border: var(--bw) solid var(--ink);
+  border-radius: 50%;
+  background: var(--swatch);
+  cursor: pointer;
+  transition: scale var(--spring), box-shadow var(--snap);
+}
+.planet-swatch--mercury { --swatch: var(--planet-mercury); }
+.planet-swatch--earth { --swatch: var(--planet-earth); }
+.planet-swatch--venus { --swatch: var(--planet-venus); }
+.planet-swatch--mars { --swatch: var(--planet-mars); }
+.planet-swatch[aria-pressed="true"] { box-shadow: 0 0 0 2px var(--surface), 0 0 0 4px var(--text); }
+/* The planet's name, in a little label under the swatch */
+.planet-swatch::after {
+  content: attr(data-tip);
+  position: absolute;
+  top: calc(100% + 10px);
+  left: 50%;
+  translate: -50% -4px;
+  padding: 2px 8px;
+  border: var(--bw-sm) solid var(--ink);
+  background: var(--accent);
+  color: var(--on-color);
+  box-shadow: var(--shadow-sm);
+  font-family: var(--mono);
+  font-size: 0.72rem;
+  font-weight: 700;
+  white-space: nowrap;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity var(--snap), translate var(--spring);
+}
+.planet-swatch:focus-visible::after { opacity: 1; translate: -50% 0; }
+@media (hover: hover) {
+  .planet-swatch:hover { scale: 1.15; }
+  .planet-swatch:hover::after { opacity: 1; translate: -50% 0; }
+}
+.planet-switch--menu { display: none; }
 
 /* PT | EN segmented switch */
 .lang-switch {
@@ -327,7 +393,7 @@ main, .site-footer { position: relative; z-index: 1; }
 }
 .lang-switch button + button { border-left: var(--bw) solid var(--ink); }
 .lang-switch button:hover { background: var(--surface-2); }
-.lang-switch button.active { background: var(--yellow); color: var(--on-color); }
+.lang-switch button.active { background: var(--accent); color: var(--on-color); }
 
 .icon-btn {
   display: grid;
@@ -355,7 +421,7 @@ main, .site-footer { position: relative; z-index: 1; }
   font-weight: 700;
   cursor: pointer;
 }
-.btn-primary { background: var(--yellow); color: var(--on-color); }
+.btn-primary { background: var(--accent); color: var(--on-color); }
 .btn-ghost { background: var(--surface); color: var(--text); }
 
 .link-btn {
@@ -406,7 +472,7 @@ main, .site-footer { position: relative; z-index: 1; }
   height: 10px;
   border: var(--bw-sm) solid var(--ink);
   border-radius: 50%;
-  background: var(--yellow);
+  background: var(--accent);
 }
 .status-dot::after {
   content: "";
@@ -423,12 +489,12 @@ main, .site-footer { position: relative; z-index: 1; }
   letter-spacing: -0.04em;
   animation: rise-in 0.6s 0.2s both;
 }
-/* The name sits on a tilted yellow sticker */
+/* The name sits on a tilted accent sticker */
 .name-gradient {
   display: inline-block;
   margin-top: 6px;
   padding: 0 0.18em;
-  background: var(--yellow);
+  background: var(--accent);
   color: var(--on-color);
   border: var(--bw) solid var(--ink);
   border-radius: var(--radius-sm);
@@ -558,13 +624,13 @@ main, .site-footer { position: relative; z-index: 1; }
 .moon-bounce { position: relative; display: block; width: 100%; height: 100%; }
 .moon-bounce.boing { animation: boing 0.6s var(--ease) both; }
 .moon-burst { position: absolute; top: 50%; left: 50%; z-index: 3; pointer-events: none; }
-/* Each star is a yellow diamond sent out along its own angle */
+/* Each star is an accent diamond sent out along its own angle */
 .moon-burst i {
   position: absolute;
   width: 16px;
   height: 16px;
   margin: -8px 0 0 -8px;
-  background: var(--yellow);
+  background: var(--accent);
   border: var(--bw) solid #0d0d0d;
   rotate: var(--a);
   animation: burst 0.8s cubic-bezier(0.2, 0.8, 0.3, 1) forwards;
@@ -590,7 +656,7 @@ main, .site-footer { position: relative; z-index: 1; }
   height: 10px;
   margin-left: -3px;
   border-radius: var(--radius-xs);
-  background: var(--yellow);
+  background: var(--accent);
   animation: scroll-cue 1.8s ease-in-out infinite;
 }
 
@@ -613,7 +679,7 @@ main, .site-footer { position: relative; z-index: 1; }
   font-family: var(--mono);
   font-size: 0.42em;
   font-weight: 700;
-  background: var(--yellow);
+  background: var(--accent);
   color: var(--on-color);
   border: var(--bw) solid var(--ink);
   border-radius: var(--radius-xs);
@@ -709,12 +775,12 @@ main, .site-footer { position: relative; z-index: 1; }
   background: var(--surface);
   border: var(--bw) solid var(--ink);
 }
-.mission--current .mission-node { background: var(--yellow); box-shadow: var(--shadow-sm); }
+.mission--current .mission-node { background: var(--accent); box-shadow: var(--shadow-sm); }
 .mission-card { padding: 20px 24px; }
 .mission-head { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 10px; margin-bottom: 10px; }
 .mission-period { font-family: var(--mono); font-size: 0.82rem; font-weight: 700; }
 .mission-kind { background: var(--surface-2); color: var(--text); }
-.mission-live { background: var(--yellow); color: var(--on-color); }
+.mission-live { background: var(--accent); color: var(--on-color); }
 .mission-live::before {
   content: "";
   width: 7px;
@@ -743,9 +809,9 @@ main, .site-footer { position: relative; z-index: 1; }
   box-shadow: var(--shadow-sm);
   font-size: 0.95rem;
 }
-/* The main focus (back-end) leads, in yellow like the moon */
+/* The main focus (back-end) leads, in the accent colour */
 .skill-card--main h3 { font-size: 1.3rem; flex-wrap: wrap; }
-.skill-card--main .skill-icon { background: var(--yellow); color: var(--on-color); }
+.skill-card--main .skill-icon { background: var(--accent); color: var(--on-color); }
 .main-tag { background: var(--surface); color: var(--text); }
 .skill-card--learning { border-style: dashed; }
 
@@ -761,20 +827,20 @@ main, .site-footer { position: relative; z-index: 1; }
   border-radius: var(--radius-sm);
   box-shadow: var(--shadow-sm);
 }
-.logos li:hover { translate: var(--lift); box-shadow: var(--shadow); }
+@media (hover: hover) { .logos li:hover { translate: var(--lift); box-shadow: var(--shadow); } }
 .logos img { width: 30px; height: 30px; }
 .skill-card.visible .logos li {
   animation: pop 0.45s var(--bounce) both;
   animation-delay: calc(var(--delay, 0ms) + 250ms + var(--i, 0) * 70ms);
 }
-.logos li:hover img { animation: wiggle 0.45s ease-in-out; }
+@media (hover: hover) { .logos li:hover img { animation: wiggle 0.45s ease-in-out; } }
 
 /* ---------- Marquee: a ticker of the stack between the hero and About ---------- */
 .marquee {
   position: relative;
   z-index: 1;
   overflow: hidden;
-  background: var(--yellow);
+  background: var(--accent);
   color: var(--on-color);
   border-block: var(--bw) solid var(--ink);
 }
@@ -818,7 +884,7 @@ main, .site-footer { position: relative; z-index: 1; }
   box-shadow: var(--shadow-sm);
   cursor: pointer;
 }
-.filter-btn.active { background: var(--yellow); color: var(--on-color); }
+.filter-btn.active { background: var(--accent); color: var(--on-color); }
 .filter-count { padding: 0 6px; font-size: 0.7rem; border-width: 1px; background: var(--surface-2); color: var(--text); }
 .filter-btn.active .filter-count { background: #fff; color: var(--on-color); border-color: var(--on-color); }
 
@@ -895,9 +961,10 @@ main, .site-footer { position: relative; z-index: 1; }
   border-radius: var(--radius-sm);
   background: var(--surface);
   font-size: 1rem;
-  transition: background-color var(--snap), translate var(--snap), box-shadow var(--snap);
+  transition: background-color var(--snap), color var(--snap), translate var(--spring), box-shadow var(--spring);
 }
-.project-links a:hover { background: var(--yellow); color: var(--on-color); translate: -2px -2px; box-shadow: var(--shadow-sm); }
+.project-links a:hover, .project-links a:focus-visible { background: var(--accent); color: var(--on-color); translate: -2px -2px; box-shadow: var(--shadow-sm); }
+.project-links a:active { translate: 0 0; box-shadow: none; transition-duration: 0.05s; }
 
 .project-card h3 { display: flex; align-items: center; flex-wrap: wrap; gap: 10px; font-size: 1.25rem; margin-bottom: 10px; }
 .stretched-link::before { content: ""; position: absolute; inset: 0; z-index: 1; }
@@ -959,7 +1026,19 @@ main, .site-footer { position: relative; z-index: 1; }
   box-shadow: var(--shadow-lg);
 }
 .contact-lead { font-family: var(--display); font-size: clamp(1.8rem, 4.4vw, 2.6rem); font-weight: 700; letter-spacing: -0.03em; line-height: 1.15; }
-.contact-text { color: var(--muted); max-width: 520px; margin: 14px auto 32px; font-size: 1.05rem; }
+.contact-text { color: var(--muted); max-width: 520px; margin: 14px auto 18px; font-size: 1.05rem; }
+.local-time {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 28px;
+  padding: 4px 12px;
+  border: var(--bw-sm) solid var(--ink);
+  background: var(--surface-2);
+  font-family: var(--mono);
+  font-size: 0.82rem;
+}
+.local-time strong { font-variant-numeric: tabular-nums; }
 .contact-actions { display: flex; flex-wrap: wrap; justify-content: center; gap: 14px; }
 .copy-btn span { font-family: var(--mono); font-size: 0.86rem; font-weight: 500; }
 .socials { display: flex; justify-content: center; gap: 14px; margin-top: 34px; font-family: var(--mono); font-size: 0.86rem; font-weight: 700; }
@@ -1008,7 +1087,7 @@ main, .site-footer { position: relative; z-index: 1; }
 .reveal {
   opacity: 0;
   transform: translateY(32px) scale(0.97);
-  transition: opacity 0.5s var(--ease), transform 0.65s var(--bounce), translate var(--snap), box-shadow var(--snap);
+  transition: opacity 0.5s var(--ease), transform 0.65s var(--bounce), translate var(--spring), box-shadow var(--spring);
   transition-delay: var(--delay, 0ms), var(--delay, 0ms), 0s, 0s;
 }
 .reveal.visible { opacity: 1; transform: none; }
@@ -1048,14 +1127,16 @@ main, .site-footer { position: relative; z-index: 1; }
 }
 @keyframes arrive-pop { 30% { transform: translateY(-4px) scale(1.3); } }
 @keyframes arrive-line {
-  0% { transform: scaleX(0); background: var(--yellow); }
-  50% { transform: scaleX(1); background: var(--yellow); }
+  0% { transform: scaleX(0); background: var(--accent); }
+  50% { transform: scaleX(1); background: var(--accent); }
 }
 
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after { animation-duration: 0.01ms !important; animation-iteration-count: 1 !important; }
   .reveal { opacity: 1; transform: none; transition: none; }
   .orbit-track, .orbit-moon, .marquee-track, .sketch-moon { animation: none !important; }
+  /* Hover still shows through the shadow and colour, just without moving */
+  :root { --lift: 0px 0px; --press: 0px 0px; }
 }
 
 /* ---------- Responsive ---------- */
@@ -1090,9 +1171,12 @@ main, .site-footer { position: relative; z-index: 1; }
   }
   .nav.open { visibility: visible; opacity: 1; transform: none; }
   .nav a { padding: 10px 14px; }
-  /* In the dropdown the active link gets its own yellow row instead of the sliding block */
+  /* In the dropdown the active link gets its own accent row instead of the sliding block */
   .nav-indicator { display: none; }
-  .nav a.active { background: var(--yellow); border-color: var(--ink); }
+  .nav a.active { background: var(--accent); border-color: var(--ink); }
+  .planet-switch--bar { display: none; }
+  .planet-switch--menu { display: flex; gap: 10px; padding: 10px 14px 4px; }
+  .planet-switch--menu .planet-swatch { width: 26px; height: 26px; }
 
   .section { padding-block: 72px; }
   .skills-grid { grid-template-columns: 1fr; }

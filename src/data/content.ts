@@ -13,6 +13,12 @@ export const EMAIL = "manutex782006@gmail.com";
 // and merged with the hand-written projects below.
 export const GITHUB_USER = "Manutex78";
 
+// Shown in the contact section; set to null to hide it
+export const LINKEDIN_URL: string | null = "https://www.linkedin.com/in/manutex/";
+
+// The contact section shows the current time here, so people know when you're awake
+export const TIME_ZONE = "Europe/Lisbon";
+
 // Shown in the hero status pill; set to null to hide it
 export const AVAILABILITY: Localized | null = {
   // U+2011 non-breaking hyphens keep "back-end" on one line in the narrow pill

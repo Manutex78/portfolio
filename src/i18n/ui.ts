@@ -20,6 +20,12 @@ const en = {
   "header.menuClose": "Close menu",
   "header.language": "Language",
   "header.tonight": "Tonight's moon: {phase}",
+  "header.linkedin": "LinkedIn profile",
+  "header.planet": "Accent colour",
+  "planet.mercury": "Mercury",
+  "planet.earth": "Earth",
+  "planet.venus": "Venus",
+  "planet.mars": "Mars",
 
   "hero.greeting": "Hello, I'm",
   "hero.sub": "Back-end developer focused on",
@@ -99,6 +105,7 @@ const en = {
   "contact.hello": "Send an email",
   "contact.copied": "Copied!",
   "contact.copyLabel": "Copy email address",
+  "contact.time": "It's **{time}** in Portugal",
 
   "footer.tonight": "Tonight's moon:",
   "footer.lit": "{n}% lit",
@@ -151,6 +158,12 @@ const pt: Record<UIKey, string> = {
   "header.menuClose": "Fechar menu",
   "header.language": "Idioma",
   "header.tonight": "A Lua esta noite: {phase}",
+  "header.linkedin": "Perfil no LinkedIn",
+  "header.planet": "Cor de destaque",
+  "planet.mercury": "Mercúrio",
+  "planet.earth": "Terra",
+  "planet.venus": "Vénus",
+  "planet.mars": "Marte",
 
   "hero.greeting": "Olá, sou o",
   "hero.sub": "Programador back-end focado em",
@@ -230,6 +243,7 @@ const pt: Record<UIKey, string> = {
   "contact.hello": "Enviar email",
   "contact.copied": "Copiado!",
   "contact.copyLabel": "Copiar endereço de email",
+  "contact.time": "Em Portugal são **{time}**",
 
   "footer.tonight": "A Lua esta noite:",
   "footer.lit": "{n}% iluminada",
