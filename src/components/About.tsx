@@ -1,31 +1,31 @@
-import { AVAILABILITY, SPOKEN_LANGUAGES } from "../data/content";
+import { AVAILABILITY } from "../data/content";
+import { useI18n } from "../i18n/LanguageContext";
+import { Rich } from "../i18n/Rich";
 import { Reveal, SectionTitle } from "./Reveal";
 
-const facts = [
-  { icon: "fa-solid fa-crosshairs", label: "Focus", value: "TypeScript & React" },
-  { icon: "fa-solid fa-layer-group", label: "Builds", value: "Web apps, games, 3D/VR, Python tools" },
-  { icon: "fa-solid fa-graduation-cap", label: "Studying", value: "Web Information Systems @ ESMAD" },
-  { icon: "fa-solid fa-language", label: "Speaks", value: SPOKEN_LANGUAGES.join(" & ") },
-  ...(AVAILABILITY ? [{ icon: "fa-solid fa-satellite-dish", label: "Status", value: AVAILABILITY }] : []),
-];
-
 export function About() {
+  const { t, l } = useI18n();
+
+  const facts = [
+    { icon: "fa-solid fa-server", label: t("fact.focus"), value: t("fact.focusValue") },
+    { icon: "fa-solid fa-layer-group", label: t("fact.builds"), value: t("fact.buildsValue") },
+    { icon: "fa-solid fa-graduation-cap", label: t("fact.studying"), value: t("fact.studyingValue") },
+    { icon: "fa-solid fa-language", label: t("fact.speaks"), value: t("fact.speaksValue") },
+    ...(AVAILABILITY ? [{ icon: "fa-solid fa-satellite-dish", label: t("fact.status"), value: l(AVAILABILITY) }] : []),
+  ];
+
   return (
     <section className="section container" id="about" tabIndex={-1}>
-      <SectionTitle index="01">About me</SectionTitle>
+      <SectionTitle index="01">{t("about.title")}</SectionTitle>
       <div className="about-grid">
         <Reveal className="about-text">
           <p>
-            Hello! I'm a self-driven developer who likes learning by building: most of my projects started as a
-            tool I wanted for myself and grew from there. I'm currently studying Web Information Systems &amp;
-            Technologies at ESMAD, after a vocational course in IT and an internship diagnosing and repairing hardware and software.
+            <Rich text={t("about.p1")} />
           </p>
           <p>
-            I'm comfortable across the stack — full-stack web apps with Vue, Node and MySQL, browser games and 3D/VR
-            scenes, and Python desktop apps and scripts. Right now I'm focused on <strong>strongly-typed code with TypeScript</strong> and{" "}
-            <strong>component-driven UIs in React</strong> — this site is built with both.
+            <Rich text={t("about.p2")} />
           </p>
-          <p>I'm open to internships, freelance work and collaborations.</p>
+          <p>{t("about.p3")}</p>
         </Reveal>
 
         <Reveal className="about-card" delay={1}>
@@ -34,7 +34,7 @@ export function About() {
           </div>
           <dl className="facts">
             {facts.map(({ icon, label, value }) => (
-              <div key={label}>
+              <div key={icon}>
                 <dt>
                   <i className={icon} aria-hidden="true" /> {label}
                 </dt>

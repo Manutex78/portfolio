@@ -1,4 +1,4 @@
-import type { Project } from "../data/content";
+import type { Badge, Category, Project } from "../data/content";
 
 export interface GithubRepo {
   name: string;
@@ -14,7 +14,7 @@ export interface GithubRepo {
   pushed_at: string;
 }
 
-const LANGUAGE_CATEGORY: Record<string, string> = { Dart: "Mobile", Kotlin: "Mobile", Swift: "Mobile", Python: "Python" };
+const LANGUAGE_CATEGORY: Record<string, Category> = { Dart: "mobile", Kotlin: "mobile", Swift: "mobile", Python: "python" };
 
 const LANGUAGE_ICON: Record<string, string> = {
   Dart: "fa-solid fa-mobile-screen",
@@ -56,19 +56,20 @@ function repoToProject(repo: GithubRepo): Project {
     title: prettyName(repo.name),
     repo: repo.name,
     github: repo.html_url,
-    description: repo.description || "No description yet — check the repo for details.",
+    // Empty shows a translated "no description yet" on the card
+    description: repo.description || "",
     tech,
-    category: (repo.language && LANGUAGE_CATEGORY[repo.language]) || "Web",
+    category: (repo.language && LANGUAGE_CATEGORY[repo.language]) || "web",
     demo: repo.homepage || "",
     language: repo.language ?? undefined,
     stars: repo.stargazers_count,
     updatedAt: repo.pushed_at,
-    badges: [repo.fork && "Fork", repo.archived && "Archived"].filter((b): b is string => !!b),
+    badges: [repo.fork && "Fork", repo.archived && "Archived"].filter((b): b is Badge => !!b),
   };
 }
 
-const apiError = (res: Response) =>
-  new Error(res.status === 403 ? "GitHub rate limit reached — try again in a bit." : `GitHub responded ${res.status}`);
+// The message is a code ("rate-limit" or the HTTP status); the UI turns it into words
+const apiError = (res: Response) => new Error(res.status === 403 ? "rate-limit" : String(res.status));
 
 // Every public repo, forks and archived ones included; follows pages past 100.
 // `extra` adds repos that live elsewhere ("owner/name"), like an organization's
@@ -125,7 +126,6 @@ export function mergeProjects(curated: Project[], repos: GithubRepo[], hidden: s
   return merged;
 }
 
-const rtf = new Intl.RelativeTimeFormat("en", { numeric: "auto" });
 const UNITS: [Intl.RelativeTimeFormatUnit, number][] = [
   ["year", 365 * 24 * 3600],
   ["month", 30 * 24 * 3600],
@@ -135,11 +135,16 @@ const UNITS: [Intl.RelativeTimeFormatUnit, number][] = [
   ["minute", 60],
 ];
 
-export function timeAgo(iso: string) {
+// One formatter per locale, built on first use: every project card calls timeAgo
+const formatters = new Map<string, Intl.RelativeTimeFormat>();
+
+export function timeAgo(iso: string, locale: string) {
+  let rtf = formatters.get(locale);
+  if (!rtf) formatters.set(locale, (rtf = new Intl.RelativeTimeFormat(locale, { numeric: "auto" })));
   const seconds = (new Date(iso).getTime() - Date.now()) / 1000;
   for (const [unit, size] of UNITS) {
     // Truncate so 21 months reads "last year", not "2 years ago"
     if (Math.abs(seconds) >= size) return rtf.format(Math.trunc(seconds / size), unit);
   }
-  return "just now";
+  return rtf.format(0, "minute");
 }

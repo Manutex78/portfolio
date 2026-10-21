@@ -1,29 +1,42 @@
+import type { CSSProperties } from "react";
 import { skills } from "../data/content";
+import { LOGOS } from "../data/logos";
+import { useI18n } from "../i18n/LanguageContext";
 import { Reveal, SectionTitle } from "./Reveal";
 
 export function Skills() {
+  const { t, l } = useI18n();
+
   return (
     <section className="section container" id="skills" tabIndex={-1}>
-      <SectionTitle index="03">Skills</SectionTitle>
+      <SectionTitle index="03">{t("skills.title")}</SectionTitle>
       <div className="skills-grid">
-        {skills.map(({ title, icon, items, usedIn, learning }, i) => (
-          <Reveal key={title} className={`skill-card${learning ? " skill-card--learning" : ""}`} delay={i}>
+        {skills.map(({ title, icon, items, main, learning }, i) => (
+          <Reveal
+            key={icon}
+            className={`skill-card${main ? " skill-card--main" : ""}${learning ? " skill-card--learning" : ""}`}
+            delay={i}
+          >
             <h3>
               <span className="skill-icon">
                 <i className={icon} aria-hidden="true" />
               </span>
-              {title}
+              {l(title)}
+              {main && <span className="main-tag">{t("skills.main")}</span>}
             </h3>
-            <ul className="tags">
-              {items.map((item) => (
-                <li key={item}>{item}</li>
+            <ul className="logos">
+              {items.map((tech, index) => (
+                <li key={tech} title={tech} style={{ "--i": index } as CSSProperties}>
+                  <img
+                    src={`logos/${LOGOS[tech]}.svg`}
+                    alt={tech}
+                    width={30}
+                    height={30}
+                    loading="lazy"
+                  />
+                </li>
               ))}
             </ul>
-            {usedIn && (
-              <p className="used-in">
-                <i className="fa-solid fa-rocket" aria-hidden="true" /> Used in {usedIn.join(", ")}
-              </p>
-            )}
           </Reveal>
         ))}
       </div>

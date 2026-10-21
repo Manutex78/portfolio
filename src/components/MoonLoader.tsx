@@ -1,5 +1,7 @@
 import { useEffect, useRef, useState } from "react";
-import { moonPath, phaseName } from "../lib/moon";
+import { moonPath, phaseIndex } from "../lib/moon";
+import { useI18n } from "../i18n/LanguageContext";
+import { MOON_PHASES } from "../i18n/ui";
 import { useReducedMotion } from "../hooks/useReducedMotion";
 
 const R = 45;
@@ -15,23 +17,24 @@ interface MoonLoaderProps {
 // A moon cycling through its phases
 export function MoonLoader({ size = 64, label, showPhase = false }: MoonLoaderProps) {
   const litRef = useRef<SVGPathElement>(null);
-  const [phase, setPhase] = useState("");
+  const [phase, setPhase] = useState<number | null>(null);
   const reducedMotion = useReducedMotion();
+  const { t } = useI18n();
 
   useEffect(() => {
     const start = performance.now();
     let frame = 0;
-    let lastName = "";
+    let last = -1;
 
     const tick = (now: number) => {
       let p = ((now - start) % CYCLE_MS) / CYCLE_MS;
       // With reduced motion, step through the 8 named phases instead of gliding
       if (reducedMotion) p = Math.floor(p * 8) / 8;
       litRef.current?.setAttribute("d", moonPath(p, R));
-      const name = phaseName(p);
-      if (showPhase && name !== lastName) {
-        lastName = name;
-        setPhase(name);
+      const index = phaseIndex(p);
+      if (showPhase && index !== last) {
+        last = index;
+        setPhase(index);
       }
       frame = requestAnimationFrame(tick);
     };
@@ -49,7 +52,11 @@ export function MoonLoader({ size = 64, label, showPhase = false }: MoonLoaderPr
         <circle className="moon-crater" cx="-6" cy="22" r="4" />
       </svg>
       <p className="loader-label">{label}</p>
-      {showPhase && <p className="loader-phase" aria-hidden="true">{phase}</p>}
+      {showPhase && (
+        <p className="loader-phase" aria-hidden="true">
+          {phase !== null && t(MOON_PHASES[phase])}
+        </p>
+      )}
     </div>
   );
 }

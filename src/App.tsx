@@ -3,6 +3,7 @@ import { About } from "./components/About";
 import { Contact } from "./components/Contact";
 import { Footer } from "./components/Footer";
 import { Header } from "./components/Header";
+import { Marquee } from "./components/Marquee";
 import { MissionLog } from "./components/MissionLog";
 import { Hero, type HeroStats } from "./components/Hero";
 import { PageLoader } from "./components/PageLoader";
@@ -12,22 +13,25 @@ import { Starfield } from "./components/Starfield";
 import { curatedProjects, GITHUB_USER, missions } from "./data/content";
 import { useGithubProjects } from "./hooks/useGithubProjects";
 import { useSectionNav } from "./hooks/useSectionNav";
+import { useI18n } from "./i18n/LanguageContext";
+import type { UIKey } from "./i18n/ui";
 
-const SECTIONS = [
-  { id: "about", label: "About" },
-  { id: "journey", label: "Journey" },
-  { id: "skills", label: "Skills" },
-  { id: "projects", label: "Projects" },
-  { id: "contact", label: "Contact" },
+const SECTIONS: { id: string; label: UIKey }[] = [
+  { id: "about", label: "nav.about" },
+  { id: "journey", label: "nav.journey" },
+  { id: "skills", label: "nav.skills" },
+  { id: "projects", label: "nav.projects" },
+  { id: "contact", label: "nav.contact" },
 ];
 const SECTION_IDS = SECTIONS.map((s) => s.id);
 
 // Counted from the first entry in the mission log
-const FIRST_YEAR = Math.min(...missions.map((m) => parseInt(m.period, 10)));
+const FIRST_YEAR = Math.min(...missions.map((m) => m.start));
 
 export default function App() {
   const activeId = useSectionNav(SECTION_IDS);
   const github = useGithubProjects(GITHUB_USER, curatedProjects);
+  const { t } = useI18n();
 
   const stats = useMemo<HeroStats | null>(() => {
     if (github.status === "loading") return null;
@@ -41,7 +45,7 @@ export default function App() {
   return (
     <>
       <a className="skip-link" href="#about">
-        Skip to content
+        {t("skip")}
       </a>
       <PageLoader />
       <Header sections={SECTIONS} activeId={activeId} />
@@ -51,6 +55,7 @@ export default function App() {
           <Starfield />
           <Hero stats={stats} statsLoading={github.status === "loading" && !!GITHUB_USER} />
         </div>
+        <Marquee />
         <About />
         <MissionLog />
         <Skills />

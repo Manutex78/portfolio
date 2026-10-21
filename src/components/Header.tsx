@@ -1,23 +1,53 @@
 import { useEffect, useLayoutEffect, useRef, useState } from "react";
 import { useMoonPhase } from "../hooks/useMoonPhase";
 import { useTheme } from "../hooks/useTheme";
+import { useI18n } from "../i18n/LanguageContext";
+import { LOCALE, type Lang } from "../i18n/types";
+import { MOON_PHASES, type UIKey } from "../i18n/ui";
 import { MoonIcon } from "./MoonIcon";
 
 interface HeaderProps {
-  sections: { id: string; label: string }[];
+  sections: { id: string; label: UIKey }[];
   activeId: string | null;
+}
+
+const LANGS: { code: Lang; label: string; name: string }[] = [
+  { code: "pt", label: "PT", name: "Português" },
+  { code: "en", label: "EN", name: "English" },
+];
+
+function LanguageSwitch() {
+  const { lang, setLang, t } = useI18n();
+  return (
+    <div className="lang-switch" role="group" aria-label={t("header.language")}>
+      {LANGS.map(({ code, label, name }) => (
+        <button
+          key={code}
+          type="button"
+          lang={LOCALE[code]}
+          className={lang === code ? "active" : undefined}
+          aria-pressed={lang === code}
+          aria-label={name}
+          onClick={() => setLang(code)}
+        >
+          {label}
+        </button>
+      ))}
+    </div>
+  );
 }
 
 export function Header({ sections, activeId }: HeaderProps) {
   const [menuOpen, setMenuOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
   const { theme, toggle } = useTheme();
+  const { t, lang } = useI18n();
   const moon = useMoonPhase();
   const navRef = useRef<HTMLElement>(null);
   const indicatorRef = useRef<HTMLSpanElement>(null);
   const progressRef = useRef<HTMLDivElement>(null);
 
-  // Slide the underline to the active link
+  // Slide the underline to the active link (labels change width with the language)
   useLayoutEffect(() => {
     const moveIndicator = () => {
       const indicator = indicatorRef.current;
@@ -32,7 +62,7 @@ export function Header({ sections, activeId }: HeaderProps) {
     window.addEventListener("resize", moveIndicator);
     document.fonts?.ready.then(moveIndicator);
     return () => window.removeEventListener("resize", moveIndicator);
-  }, [activeId]);
+  }, [activeId, lang]);
 
   // Reading progress bar + a more solid navbar once the page has scrolled.
   // The bar is updated directly so scrolling doesn't re-render the header.
@@ -60,14 +90,14 @@ export function Header({ sections, activeId }: HeaderProps) {
     <>
       <div className="scroll-progress" ref={progressRef} aria-hidden="true" />
       <header className={`site-header${scrolled ? " scrolled" : ""}`}>
-        <a className="brand" href="#top" title={`Tonight's moon: ${moon.name}`}>
+        <a className="brand" href="#top" title={t("header.tonight", { phase: t(MOON_PHASES[moon.index]) })}>
           <MoonIcon phase={moon.phase} size={20} className="brand-moon" />
           <span>
             manuel<span className="brand-dot">.</span>dev
           </span>
         </a>
 
-        <nav className={`nav${menuOpen ? " open" : ""}`} id="nav" ref={navRef} aria-label="Main navigation">
+        <nav className={`nav${menuOpen ? " open" : ""}`} id="nav" ref={navRef} aria-label={t("nav.label")}>
           {sections.map(({ id, label }) => (
             <a
               key={id}
@@ -76,25 +106,26 @@ export function Header({ sections, activeId }: HeaderProps) {
               aria-current={activeId === id ? "true" : undefined}
               onClick={() => setMenuOpen(false)}
             >
-              {label}
+              {t(label)}
             </a>
           ))}
           <span className="nav-indicator" ref={indicatorRef} aria-hidden="true" />
         </nav>
 
         <div className="header-actions">
+          <LanguageSwitch />
           <button
             className="icon-btn theme-btn"
             type="button"
             onClick={toggle}
-            aria-label={theme === "dark" ? "Switch to light mode" : "Switch to dark mode"}
+            aria-label={theme === "dark" ? t("header.themeToLight") : t("header.themeToDark")}
           >
             <i className={`fa-solid ${theme === "dark" ? "fa-moon" : "fa-sun"}`} aria-hidden="true" />
           </button>
           <button
             className="icon-btn menu-btn"
             type="button"
-            aria-label={menuOpen ? "Close menu" : "Open menu"}
+            aria-label={menuOpen ? t("header.menuClose") : t("header.menuOpen")}
             aria-expanded={menuOpen}
             aria-controls="nav"
             onClick={() => setMenuOpen((o) => !o)}

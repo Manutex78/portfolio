@@ -1,25 +1,31 @@
 import { memo } from "react";
 import type { Project } from "../data/content";
+import { useI18n } from "../i18n/LanguageContext";
 import { LANGUAGE_COLOR, timeAgo } from "../lib/github";
 
 export const ProjectCard = memo(function ProjectCard({ project: p }: { project: Project }) {
+  const { t, l, locale } = useI18n();
   const href = p.demo || p.github;
   const languageColor = p.language && LANGUAGE_COLOR[p.language];
+  const description = l(p.description) || t("card.noDescription");
 
   return (
     <article className={`project-card${p.featured ? " project-card--featured" : ""}`}>
       <div className="project-top">
-        <span className={`project-icon${p.logo ? " project-icon--logo" : ""}`} style={p.logoBg ? { background: p.logoBg } : undefined}>
+        <span
+          className={`project-icon${p.logo ? " project-icon--logo" : ""}`}
+          style={p.logoBg ? { background: p.logoBg } : undefined}
+        >
           {p.logo ? <img src={p.logo} alt="" width={30} height={30} /> : <i className={p.icon} aria-hidden="true" />}
         </span>
         <div className="project-links">
           {p.github && (
-            <a href={p.github} target="_blank" rel="noopener noreferrer" aria-label={`${p.title} on GitHub`}>
+            <a href={p.github} target="_blank" rel="noopener noreferrer" aria-label={t("card.onGithub", { title: p.title })}>
               <i className="fa-brands fa-github" aria-hidden="true" />
             </a>
           )}
           {p.demo && (
-            <a href={p.demo} target="_blank" rel="noopener noreferrer" aria-label={`${p.title} live site`}>
+            <a href={p.demo} target="_blank" rel="noopener noreferrer" aria-label={t("card.liveSite", { title: p.title })}>
               <i className="fa-solid fa-arrow-up-right-from-square" aria-hidden="true" />
             </a>
           )}
@@ -35,14 +41,14 @@ export const ProjectCard = memo(function ProjectCard({ project: p }: { project: 
         ) : (
           p.title
         )}
-        {p.featured && <span className="featured-tag">Featured</span>}
+        {p.featured && <span className="featured-tag">{t("card.featured")}</span>}
       </h3>
-      <p className="project-desc">{p.description}</p>
+      <p className="project-desc">{description}</p>
 
       {p.tech.length > 0 && (
         <ul className="project-tech">
-          {p.tech.map((t) => (
-            <li key={t}>{t}</li>
+          {p.tech.map((tech) => (
+            <li key={tech}>{tech}</li>
           ))}
         </ul>
       )}
@@ -61,10 +67,11 @@ export const ProjectCard = memo(function ProjectCard({ project: p }: { project: 
         )}
         {p.badges?.map((b) => (
           <span key={b} className="badge">
-            <i className={b === "Fork" ? "fa-solid fa-code-fork" : "fa-solid fa-box-archive"} aria-hidden="true" /> {b}
+            <i className={b === "Fork" ? "fa-solid fa-code-fork" : "fa-solid fa-box-archive"} aria-hidden="true" />{" "}
+            {t(`badge.${b}`)}
           </span>
         ))}
-        {p.updatedAt && <span className="updated">Updated {timeAgo(p.updatedAt)}</span>}
+        {p.updatedAt && <span className="updated">{t("card.updated", { time: timeAgo(p.updatedAt, locale) })}</span>}
       </div>
     </article>
   );

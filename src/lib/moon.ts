@@ -1,7 +1,6 @@
-const PHASE_NAMES = [
-  "New moon", "Waxing crescent", "First quarter", "Waxing gibbous",
-  "Full moon", "Waning gibbous", "Last quarter", "Waning crescent",
-];
+// Phases are numbered 0–7 (new, waxing crescent, first quarter, waxing gibbous,
+// full, waning gibbous, last quarter, waning crescent); names are translated in the UI
+export const FULL_MOON = 4;
 
 // Lit area of a moon of radius r at phase p (0 = new, 0.5 = full, 1 = new again).
 // Outer edge is a half circle on the lit side; the terminator is a half ellipse.
@@ -14,7 +13,7 @@ export function moonPath(p: number, r: number) {
   return `M0 ${-r} A${r} ${r} 0 0 ${outer} 0 ${r} A${rx} ${r} 0 0 ${term} 0 ${-r}Z`;
 }
 
-export const phaseName = (p: number) => PHASE_NAMES[Math.round(p * 8) % 8];
+export const phaseIndex = (p: number) => Math.round(p * 8) % 8;
 
 // ---- The real moon ----
 
@@ -28,7 +27,8 @@ export interface MoonPhase {
   phase: number;
   /** Lit fraction of the disc, 0–1 */
   illumination: number;
-  name: string;
+  /** 0–7, see FULL_MOON above */
+  index: number;
   daysToFull: number;
 }
 
@@ -42,13 +42,13 @@ export function moonPhaseAt(date: Date): MoonPhase {
   // The four principal phases are moments, so give each about a day either side;
   // the rest of the cycle belongs to the crescents and gibbouses in between
   const near = (target: number) => Math.abs(age - target * SYNODIC_DAYS) < 1;
-  let name: string;
-  if (near(0) || near(1)) name = "New moon";
-  else if (near(0.25)) name = "First quarter";
-  else if (near(0.5)) name = "Full moon";
-  else if (near(0.75)) name = "Last quarter";
-  else name = PHASE_NAMES[1 + 2 * Math.floor(phase * 4)];
+  let index: number;
+  if (near(0) || near(1)) index = 0;
+  else if (near(0.25)) index = 2;
+  else if (near(0.5)) index = FULL_MOON;
+  else if (near(0.75)) index = 6;
+  else index = 1 + 2 * Math.floor(phase * 4);
 
   const daysToFull = ((0.5 - phase + 1) % 1) * SYNODIC_DAYS;
-  return { phase, illumination, name, daysToFull };
+  return { phase, illumination, index, daysToFull };
 }

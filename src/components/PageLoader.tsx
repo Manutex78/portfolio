@@ -1,12 +1,14 @@
 import { useEffect, useState } from "react";
 import { MoonLoader } from "./MoonLoader";
 import { useReducedMotion } from "../hooks/useReducedMotion";
+import { useI18n } from "../i18n/LanguageContext";
 
 type Stage = "shown" | "leaving" | "gone";
 
 export function PageLoader() {
   const [stage, setStage] = useState<Stage>("shown");
   const reducedMotion = useReducedMotion();
+  const { t } = useI18n();
 
   useEffect(() => {
     // Let at least half a lunar cycle play so the loader doesn't just flash
@@ -36,7 +38,7 @@ export function PageLoader() {
 
   return (
     <div className={`page-loader${stage === "leaving" ? " done" : ""}`} aria-live="polite">
-      <MoonLoader size={96} label="Waiting for moonrise…" showPhase />
+      <MoonLoader size={96} label={t("loader.page")} showPhase />
     </div>
   );
 }
