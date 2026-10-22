@@ -16,6 +16,15 @@ export const GITHUB_USER = "Manutex78";
 // Shown in the contact section; set to null to hide it
 export const LINKEDIN_URL: string | null = "https://www.linkedin.com/in/manutex/";
 
+// Instagram username (without the @); set to null to hide the button
+export const INSTAGRAM_USER: string | null = "_7manu8_";
+
+// WhatsApp number in international format, digits only (e.g. "351912345678"); set to null to hide the button
+export const WHATSAPP_NUMBER: string | null = null;
+
+// Your picture for the hero frame: put the file in /public. Until it exists, the frame shows a placeholder
+export const PHOTO = "/photo.jpg";
+
 // The contact section shows the current time here, so people know when you're awake
 export const TIME_ZONE = "Europe/Lisbon";
 

@@ -1,10 +1,7 @@
-import { useEffect, useMemo, useState, type CSSProperties } from "react";
-import { AVAILABILITY, NAME, ROTATING_WORDS } from "../data/content";
-import { useMoonPhase } from "../hooks/useMoonPhase";
+import { useEffect, useMemo, useState } from "react";
+import { AVAILABILITY, FULL_NAME, NAME, PHOTO, ROTATING_WORDS } from "../data/content";
 import { useReducedMotion } from "../hooks/useReducedMotion";
 import { useI18n } from "../i18n/LanguageContext";
-import { MoonIcon } from "./MoonIcon";
-import { SketchMoon } from "./SketchMoon";
 
 export interface HeroStats {
   projects: number;
@@ -65,8 +62,32 @@ function CountUp({ to }: { to: number }) {
   return <>{n}</>;
 }
 
-// Directions of the stars that burst out when the moon is clicked
-const RAYS = Array.from({ length: 10 }, (_, i) => i * 36);
+// Framed picture that lifts off its accent backing on hover; a placeholder until PHOTO exists
+function PhotoFrame() {
+  const { t } = useI18n();
+  const [missing, setMissing] = useState(false);
+
+  return (
+    <figure className="photo-frame">
+      <span className="photo-backing" aria-hidden="true" />
+      <span className="photo-card">
+        {missing ? (
+          <span className="photo-placeholder">
+            <i className="fa-solid fa-camera" aria-hidden="true" />
+            {t("hero.photoPlaceholder")}
+          </span>
+        ) : (
+          <img src={PHOTO} alt={FULL_NAME} onError={() => setMissing(true)} />
+        )}
+        <span className="photo-tag" aria-hidden="true">
+          {NAME}
+        </span>
+      </span>
+      <span className="photo-corner photo-corner--tl" aria-hidden="true" />
+      <span className="photo-corner photo-corner--br" aria-hidden="true" />
+    </figure>
+  );
+}
 
 interface HeroProps {
   /** null hides the stats row unless it's still loading */
@@ -75,23 +96,12 @@ interface HeroProps {
 }
 
 export function Hero({ stats, statsLoading }: HeroProps) {
-  const moon = useMoonPhase();
   const { t, l } = useI18n();
-  // Each click on the moon adds a burst of stars, removed once its animation has played
-  const [bursts, setBursts] = useState<number[]>([]);
-  const [wobbles, setWobbles] = useState(0);
   const statItems = [
     { label: t("hero.statProjects"), value: stats?.projects },
     { label: t("hero.statTech"), value: stats?.technologies },
     { label: t("hero.statYears"), value: stats?.yearsInIt, suffix: "+" },
   ];
-
-  const burst = () => {
-    const id = performance.now();
-    setBursts((b) => [...b, id]);
-    setWobbles((w) => w + 1);
-    setTimeout(() => setBursts((b) => b.filter((x) => x !== id)), 900);
-  };
 
   return (
     <section className="hero container" aria-labelledby="hero-title">
@@ -138,32 +148,8 @@ export function Hero({ stats, statsLoading }: HeroProps) {
         )}
       </div>
 
-      {/* To use your picture instead, put it in /public and replace <SketchMoon /> with
-          <img src="your-photo.jpg" alt="Manuel" /> */}
       <div className="hero-art">
-        {/* A little easter egg: clicking the moon makes it wobble and throw off stars */}
-        <div className="photo-frame" onClick={burst}>
-          <div className="photo-glow" aria-hidden="true" />
-          <div className="orbit-track" aria-hidden="true">
-            <span className="orbit-moon">
-              <MoonIcon phase={moon.phase} size={30} craters />
-            </span>
-          </div>
-          <div className="orbit-track orbit-track--inner" aria-hidden="true">
-            <span className="orbit-planet" />
-          </div>
-          {/* Re-keyed on every click so the wobble restarts */}
-          <span key={wobbles} className={`moon-bounce${wobbles ? " boing" : ""}`}>
-            <SketchMoon />
-          </span>
-          {bursts.map((id) => (
-            <span key={id} className="moon-burst" aria-hidden="true">
-              {RAYS.map((angle, i) => (
-                <i key={angle} style={{ "--a": `${angle}deg`, "--d": `${i % 2 ? 150 : 210}px` } as CSSProperties} />
-              ))}
-            </span>
-          ))}
-        </div>
+        <PhotoFrame />
       </div>
 
       <a className="scroll-cue" href="#about" aria-label={t("hero.scroll")}>

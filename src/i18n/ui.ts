@@ -38,6 +38,7 @@ const en = {
   "hero.statYears": "Years in IT",
   "hero.loading": "Loading",
   "hero.scroll": "Scroll to About",
+  "hero.photoPlaceholder": "Your photo here",
 
   "about.title": "About me",
   "about.p1":
@@ -104,7 +105,6 @@ const en = {
   "contact.lead": "Let's work together",
   "contact.text":
     "I'm open to internship opportunities, freelance projects and collaborations. If you have a role or a project in mind, send me an email and I'll reply as soon as possible.",
-  "contact.hello": "Send an email",
   "contact.copied": "Copied!",
   "contact.copyLabel": "Copy email address",
   "contact.time": "It's **{time}** in Portugal",
@@ -114,7 +114,9 @@ const en = {
   "footer.fullTomorrow": "full tomorrow",
   "footer.fullIn": "full in {n} days",
   "footer.built": "Designed & built by {name} with React",
-  "footer.top": "Back to top",
+  "footer.tagline": "Back-end focused web developer and Web Technologies student, based in Portugal.",
+  "footer.explore": "Explore",
+  "footer.elsewhere": "Elsewhere",
 
   "moon.phase0": "New moon",
   "moon.phase1": "Waxing crescent",
@@ -178,6 +180,7 @@ const pt: Record<UIKey, string> = {
   "hero.statYears": "Anos em informática",
   "hero.loading": "A carregar",
   "hero.scroll": "Ir para Sobre",
+  "hero.photoPlaceholder": "A tua foto aqui",
 
   "about.title": "Sobre mim",
   "about.p1":
@@ -244,7 +247,6 @@ const pt: Record<UIKey, string> = {
   "contact.lead": "Vamos trabalhar juntos",
   "contact.text":
     "Estou disponível para oportunidades de estágio, projetos freelance e colaborações. Se tiver uma vaga ou um projeto em mente, envie-me um email e responderei com a maior brevidade possível.",
-  "contact.hello": "Enviar email",
   "contact.copied": "Copiado!",
   "contact.copyLabel": "Copiar endereço de email",
   "contact.time": "Em Portugal são **{time}**",
@@ -254,7 +256,9 @@ const pt: Record<UIKey, string> = {
   "footer.fullTomorrow": "cheia amanhã",
   "footer.fullIn": "cheia daqui a {n} dias",
   "footer.built": "Desenhado e desenvolvido por {name} com React",
-  "footer.top": "Voltar ao topo",
+  "footer.tagline": "Programador web focado em back-end e estudante de Tecnologias Web, a viver em Portugal.",
+  "footer.explore": "Explorar",
+  "footer.elsewhere": "Noutros sítios",
 
   "moon.phase0": "Lua Nova",
   "moon.phase1": "Lua Crescente",

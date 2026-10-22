@@ -64,7 +64,7 @@ export default function App() {
         <Contact />
       </main>
 
-      <Footer />
+      <Footer sections={SECTIONS} />
       <FloatingActions />
     </>
   );

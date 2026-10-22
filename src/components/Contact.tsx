@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
-import { EMAIL, GITHUB_USER, LINKEDIN_URL, TIME_ZONE } from "../data/content";
+import { EMAIL, TIME_ZONE } from "../data/content";
+import { SOCIALS } from "../data/socials";
 import { useI18n } from "../i18n/LanguageContext";
 import { Rich } from "../i18n/Rich";
 import { Reveal, SectionTitle } from "./Reveal";
@@ -61,9 +62,6 @@ export function Contact() {
         <LocalTime />
 
         <div className="contact-actions">
-          <a className="btn btn-primary" href={`mailto:${EMAIL}`}>
-            <i className="fa-solid fa-paper-plane" aria-hidden="true" /> {t("contact.hello")}
-          </a>
           <button type="button" className="btn btn-ghost copy-btn" onClick={copyEmail} title={t("contact.copyLabel")}>
             <i className={`fa-solid ${copied ? "fa-check" : "fa-copy"}`} aria-hidden="true" />
             <span aria-live="polite">{copied ? t("contact.copied") : EMAIL}</span>
@@ -71,19 +69,11 @@ export function Contact() {
         </div>
 
         <div className="socials">
-          {GITHUB_USER && (
-            <a href={`https://github.com/${GITHUB_USER}`} target="_blank" rel="noopener noreferrer">
-              <i className="fa-brands fa-github" aria-hidden="true" /> GitHub
+          {SOCIALS.map((s) => (
+            <a key={s.label} href={s.href} target="_blank" rel="noopener noreferrer">
+              <i className={`fa-brands ${s.icon}`} aria-hidden="true" /> {s.label}
             </a>
-          )}
-          {LINKEDIN_URL && (
-            <a href={LINKEDIN_URL} target="_blank" rel="noopener noreferrer">
-              <i className="fa-brands fa-linkedin" aria-hidden="true" /> LinkedIn
-            </a>
-          )}
-          <a href={`mailto:${EMAIL}`}>
-            <i className="fa-solid fa-envelope" aria-hidden="true" /> Email
-          </a>
+          ))}
         </div>
       </Reveal>
     </section>
