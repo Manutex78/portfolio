@@ -1,6 +1,7 @@
 import { useMemo } from "react";
 import { About } from "./components/About";
 import { Contact } from "./components/Contact";
+import { FloatingActions } from "./components/FloatingActions";
 import { Footer } from "./components/Footer";
 import { Header } from "./components/Header";
 import { Marquee } from "./components/Marquee";
@@ -64,6 +65,7 @@ export default function App() {
       </main>
 
       <Footer />
+      <FloatingActions />
     </>
   );
 }

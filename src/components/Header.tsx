@@ -1,7 +1,6 @@
 import { useEffect, useLayoutEffect, useRef, useState } from "react";
 import { useMoonPhase } from "../hooks/useMoonPhase";
 import { PLANETS, usePlanet, type Planet } from "../hooks/usePlanet";
-import { useTheme } from "../hooks/useTheme";
 import { useI18n } from "../i18n/LanguageContext";
 import { LOCALE, type Lang } from "../i18n/types";
 import { MOON_PHASES, type UIKey } from "../i18n/ui";
@@ -39,10 +38,10 @@ function LanguageSwitch() {
 }
 
 // One swatch per planet accent; hovering shows the planet's name
-function PlanetSwitch({ planet, onChange, className }: { planet: Planet; onChange: (p: Planet) => void; className?: string }) {
+function PlanetSwitch({ planet, onChange }: { planet: Planet; onChange: (p: Planet) => void }) {
   const { t } = useI18n();
   return (
-    <div className={`planet-switch${className ? ` ${className}` : ""}`} role="group" aria-label={t("header.planet")}>
+    <div className="planet-switch" role="group" aria-label={t("header.planet")}>
       {PLANETS.map((p) => (
         <button
           key={p}
@@ -58,11 +57,57 @@ function PlanetSwitch({ planet, onChange, className }: { planet: Planet; onChang
   );
 }
 
+// Colour and language live behind one button so the bar only carries navigation
+function SettingsMenu() {
+  const [open, setOpen] = useState(false);
+  const { planet, setPlanet } = usePlanet();
+  const { t } = useI18n();
+  const rootRef = useRef<HTMLDivElement>(null);
+
+  // Close on Escape or a click anywhere outside the panel
+  useEffect(() => {
+    if (!open) return;
+    const onKey = (e: KeyboardEvent) => e.key === "Escape" && setOpen(false);
+    const onPointer = (e: PointerEvent) => {
+      if (!rootRef.current?.contains(e.target as Node)) setOpen(false);
+    };
+    window.addEventListener("keydown", onKey);
+    document.addEventListener("pointerdown", onPointer);
+    return () => {
+      window.removeEventListener("keydown", onKey);
+      document.removeEventListener("pointerdown", onPointer);
+    };
+  }, [open]);
+
+  return (
+    <div className="settings" ref={rootRef}>
+      <button
+        className="icon-btn settings-btn"
+        type="button"
+        aria-label={t("header.settings")}
+        aria-expanded={open}
+        aria-controls="settings-panel"
+        onClick={() => setOpen((o) => !o)}
+      >
+        <i className="fa-solid fa-sliders" aria-hidden="true" />
+      </button>
+      <div className={`settings-panel${open ? " open" : ""}`} id="settings-panel" role="group" aria-label={t("header.settings")}>
+        <div className="settings-row">
+          <span className="settings-label">{t("header.planet")}</span>
+          <PlanetSwitch planet={planet} onChange={setPlanet} />
+        </div>
+        <div className="settings-row">
+          <span className="settings-label">{t("header.language")}</span>
+          <LanguageSwitch />
+        </div>
+      </div>
+    </div>
+  );
+}
+
 export function Header({ sections, activeId }: HeaderProps) {
   const [menuOpen, setMenuOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
-  const { theme, toggle } = useTheme();
-  const { planet, setPlanet } = usePlanet();
   const { t, lang } = useI18n();
   const moon = useMoonPhase();
   const navRef = useRef<HTMLElement>(null);
@@ -132,21 +177,10 @@ export function Header({ sections, activeId }: HeaderProps) {
             </a>
           ))}
           <span className="nav-indicator" ref={indicatorRef} aria-hidden="true" />
-          {/* On phones the header has no room, so the swatches live in the menu */}
-          <PlanetSwitch planet={planet} onChange={setPlanet} className="planet-switch--menu" />
         </nav>
 
         <div className="header-actions">
-          <PlanetSwitch planet={planet} onChange={setPlanet} className="planet-switch--bar" />
-          <LanguageSwitch />
-          <button
-            className="icon-btn theme-btn"
-            type="button"
-            onClick={toggle}
-            aria-label={theme === "dark" ? t("header.themeToLight") : t("header.themeToDark")}
-          >
-            <i className={`fa-solid ${theme === "dark" ? "fa-moon" : "fa-sun"}`} aria-hidden="true" />
-          </button>
+          <SettingsMenu />
           <button
             className="icon-btn menu-btn"
             type="button"

@@ -4,15 +4,15 @@ import { ui, type UIKey } from "./ui";
 
 const STORAGE_KEY = "lang";
 
-// A saved choice wins; otherwise follow the browser (any Portuguese → PT)
+// A saved choice wins; otherwise the site opens in English
 function initialLang(): Lang {
   try {
     const saved = localStorage.getItem(STORAGE_KEY);
     if (saved === "en" || saved === "pt") return saved;
   } catch {
-    // Storage can be blocked; fall through to the browser language
+    // Storage can be blocked; fall through to the default
   }
-  return navigator.language?.toLowerCase().startsWith("pt") ? "pt" : "en";
+  return "en";
 }
 
 const LanguageContext = createContext<{ lang: Lang; setLang: (lang: Lang) => void } | null>(null);
