@@ -8,23 +8,12 @@ export const LOGOS = {
   Python: "python",
   JavaScript: "javascript",
   TypeScript: "typescript",
-  HTML: "html5",
-  CSS: "css3",
-  "Vue 3": "vuejs",
-  React: "react",
-  Bootstrap: "bootstrap",
-  "Chart.js": "chartjs",
-  "Three.js": "threejs",
-  "A-Frame": "aframe",
   Git: "git",
   GitHub: "github",
   "VS Code": "vscode",
-  Vite: "vitejs",
   npm: "npm",
   Vitest: "vitest",
   Vercel: "vercel",
-  Flutter: "flutter",
-  Dart: "dart",
 } as const;
 
 export type Tech = keyof typeof LOGOS;

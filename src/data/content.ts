@@ -55,42 +55,31 @@ export interface SkillGroup {
 }
 
 // Grouped from what the projects below actually use; back-end leads.
-// Six groups fill the 2 × 3 grid.
+// Four groups fill the 2 × 2 grid.
 export const skills: SkillGroup[] = [
   {
-    title: { en: "Back-end & data", pt: "Back-end e dados" },
+    title: { en: "Back-end & APIs", pt: "Back-end e APIs" },
     icon: "fa-solid fa-server",
-    items: ["Node.js", "Express", "Sequelize", "MySQL", "Python"],
-    usedIn: ["Modo", "GameON!"],
+    items: ["Node.js", "Express"],
+    usedIn: ["Modo"],
     main: true,
+  },
+  {
+    title: { en: "Databases & ORM", pt: "Bases de dados e ORM" },
+    icon: "fa-solid fa-database",
+    items: ["MySQL", "Sequelize"],
+    usedIn: ["Modo"],
   },
   {
     title: { en: "Languages", pt: "Linguagens" },
     icon: "fa-solid fa-code",
-    items: ["JavaScript", "TypeScript", "Python", "HTML", "CSS"],
+    items: ["JavaScript", "TypeScript", "Python"],
+    usedIn: ["Modo", "GameON!"],
   },
   {
-    title: "Front-end",
-    icon: "fa-solid fa-layer-group",
-    items: ["Vue 3", "React", "Bootstrap", "Chart.js"],
-    usedIn: ["Modo", "TeachMe", "BinBlast"],
-  },
-  {
-    title: { en: "Graphics, games & XR", pt: "Gráficos, jogos e XR" },
-    icon: "fa-solid fa-cube",
-    items: ["Three.js", "A-Frame"],
-    usedIn: ["3D Snowman", "BinBlast", "TeachMe"],
-  },
-  {
-    title: { en: "Tools", pt: "Ferramentas" },
+    title: { en: "Tools & testing", pt: "Ferramentas e testes" },
     icon: "fa-solid fa-screwdriver-wrench",
-    items: ["Git", "GitHub", "VS Code", "Vite", "npm", "Vitest", "Vercel"],
-  },
-  {
-    title: { en: "Currently learning", pt: "A aprender" },
-    icon: "fa-solid fa-user-astronaut",
-    items: ["TypeScript", "React", "Flutter", "Dart"],
-    learning: true,
+    items: ["Git", "GitHub", "npm", "Vitest", "VS Code", "Vercel"],
   },
 ];
 
@@ -106,16 +95,6 @@ export interface Mission {
 
 // The "Mission log" timeline, newest first
 export const missions: Mission[] = [
-  {
-    start: 2025,
-    title: { en: "Store Operator (part-time)", pt: "Operador de Loja (part-time)" },
-    org: "Pingo Doce",
-    kind: "work",
-    description: {
-      en: "Part-time role alongside my degree: customer service, quality control of fresh produce, FIFO stock rotation, goods receiving and in-store price updates, in compliance with HACCP food-safety standards.",
-      pt: "Funções a tempo parcial, em paralelo com a licenciatura: atendimento ao cliente, controlo de qualidade de frescos, rotação de stock (FIFO), receção de mercadorias e atualização de preços em loja, em cumprimento das normas de segurança alimentar HACCP.",
-    },
-  },
   {
     start: 2024,
     title: { en: "BSc in Web Technologies and Development", pt: "Licenciatura em Tecnologias e Desenvolvimento Web" },
@@ -133,8 +112,8 @@ export const missions: Mission[] = [
     org: "Teklit",
     kind: "work",
     description: {
-      en: "Diagnosed and repaired hardware and software on computers, phones, tablets, TVs and consoles; advised customers on equipment and services; logged repairs and kept customers updated on their status.",
-      pt: "Diagnóstico e reparação de hardware e software em computadores, telemóveis, tablets, televisões e consolas; aconselhamento a clientes na venda de equipamentos e serviços; registo de reparações e acompanhamento do seu estado junto dos clientes.",
+      en: "Diagnosed and fixed hardware and software faults, troubleshooting systems methodically and keeping a record of every repair and its status.",
+      pt: "Diagnóstico e resolução de avarias de hardware e software, com uma abordagem metódica à resolução de problemas e registo de cada reparação e do seu estado.",
     },
   },
   {
@@ -152,6 +131,18 @@ export const missions: Mission[] = [
 
 export type Category = "fullstack" | "web" | "games" | "desktop" | "mobile" | "python";
 export type Badge = "Fork" | "Archived";
+
+export interface Endpoint {
+  method: "GET" | "POST" | "PUT" | "PATCH" | "DELETE";
+  path: string;
+}
+
+/** A relationship between two tables, read left to right: "users 1:n user_tasks" */
+export interface Relation {
+  from: string;
+  kind: "1:1" | "1:n" | "n:m";
+  to: string;
+}
 
 export interface Project {
   title: string;
@@ -176,6 +167,10 @@ export interface Project {
   badges?: Badge[];
   /** Pinned to the top and shown larger */
   featured?: boolean;
+  /** A few representative routes, shown on the card like API docs */
+  endpoints?: Endpoint[];
+  /** The main table relationships, shown as a small data model */
+  schema?: Relation[];
 }
 
 // Curated details for repos you want to present in a specific way: the real
@@ -186,22 +181,36 @@ export const curatedProjects: Project[] = [
     repo: "PII-Modo",
     title: "Modo",
     description: {
-      en: "A sustainable habit tracker with a full back-end: a REST API in Node.js and Express, Sequelize models over a MySQL schema, and a Python generator that seeds the database with realistic data. A Vue front-end with charts and avatar decorations sits on top. Built with two colleagues.",
-      pt: "Um gestor de hábitos sustentáveis com back-end completo: API REST em Node.js e Express, modelos Sequelize sobre um esquema MySQL e um gerador em Python que preenche a base de dados com dados realistas. Por cima, um front-end em Vue com gráficos e decorações de avatar. Desenvolvido com dois colegas.",
+      en: "The back-end of a sustainable habit tracker: a REST API in Node.js and Express, Sequelize models and associations over a relational MySQL schema, and a Python generator that seeds the database with realistic data for development and testing. Built with two colleagues.",
+      pt: "O back-end de um gestor de hábitos sustentáveis: API REST em Node.js e Express, modelos e associações Sequelize sobre um esquema relacional MySQL e um gerador em Python que preenche a base de dados com dados realistas para desenvolvimento e testes. Desenvolvido com dois colegas.",
     },
     icon: "fa-solid fa-seedling",
     logo: "projects/modo.png",
     logoBg: "#d4f1e2",
-    tech: ["Node.js", "Express", "Sequelize", "MySQL", "Python", "Vue 3"],
+    tech: ["Node.js", "Express", "Sequelize", "MySQL", "Python"],
     category: "fullstack",
     featured: true,
+    endpoints: [
+      { method: "POST", path: "/users/login" },
+      { method: "GET", path: "/habits" },
+      { method: "GET", path: "/users/:userId/habits/:habitId/tasks" },
+      { method: "PATCH", path: "/users/:userId/tasks/:taskId/progress" },
+      { method: "POST", path: "/users/:userId/tasks/:taskId/complete" },
+      { method: "GET", path: "/tasks/:taskId/impacts" },
+    ],
+    schema: [
+      { from: "users", kind: "1:n", to: "user_tasks" },
+      { from: "tasks", kind: "1:n", to: "user_tasks" },
+      { from: "habits", kind: "1:n", to: "tasks" },
+      { from: "tasks", kind: "1:n", to: "impacts" },
+    ],
   },
   {
     repo: "GrupoMML/ProjetoAED",
     title: "GameON!",
     description: {
-      en: "A desktop game library manager inspired by Steam and Epic Games, with sign-up and login, role-based permissions, user and game management, comments and notifications stored in files. Built with Miguel Machado and Linda Glahy.",
-      pt: "Um gestor de bibliotecas de jogos para desktop, inspirado na Steam e na Epic Games, com registo e login, permissões por nível de utilizador, gestão de utilizadores e jogos, comentários e notificações guardados em ficheiros. Desenvolvido com Miguel Machado e Linda Glahy.",
+      en: "Application logic for a game library manager in Python: sign-up and login, role-based access control, user and game management, and comments and notifications persisted to files. Built with Miguel Machado and Linda Glahy.",
+      pt: "Lógica aplicacional de um gestor de bibliotecas de jogos em Python: registo e login, controlo de acessos por nível de utilizador, gestão de utilizadores e jogos, e comentários e notificações persistidos em ficheiros. Desenvolvido com Miguel Machado e Linda Glahy.",
     },
     icon: "fa-solid fa-gamepad",
     logo: "projects/gameon.png",
@@ -209,60 +218,11 @@ export const curatedProjects: Project[] = [
     tech: ["Python", "customtkinter", "Pillow"],
     category: "desktop",
   },
-  {
-    repo: "Miguyy/compg-BinBlast",
-    title: "BinBlast",
-    description: {
-      en: "An educational game about recycling in which the player launches waste from a cannon into the correct bin: paper, glass, plastic or batteries. It can be controlled with the keyboard or with hand gestures tracked through the webcam. Built with Miguel Machado.",
-      pt: "Um jogo educativo sobre reciclagem em que o jogador lança resíduos de um canhão para o ecoponto correto: papel, vidro, plástico ou pilhas. Pode ser controlado com o teclado ou com gestos das mãos detetados pela webcam. Desenvolvido com Miguel Machado.",
-    },
-    icon: "fa-solid fa-recycle",
-    logo: "projects/binblast.png",
-    logoBg: "#fff1d6",
-    tech: ["JavaScript", "Canvas", "ML5.js", "Bootstrap"],
-    category: "games",
-  },
-  {
-    repo: "GrupoMML/Projecto-I",
-    title: "TeachMe",
-    description: {
-      en: "A tutoring platform connecting teachers and students, with tutor search by subject, quizzes, a leaderboard and mutual ratings. Each user has a customisable duck avatar for minigames, and lessons can take place in a virtual reality classroom. Group project.",
-      pt: "Uma plataforma de explicações que liga professores e alunos, com pesquisa de explicadores por disciplina, quizzes, uma tabela de classificação e avaliações mútuas. Cada utilizador tem um avatar de pato personalizável para minijogos, e as aulas podem decorrer numa sala de realidade virtual. Projeto de grupo.",
-    },
-    icon: "fa-solid fa-chalkboard-user",
-    logo: "projects/teachme.png",
-    logoBg: "#fff1de",
-    tech: ["JavaScript", "Bootstrap", "A-Frame", "AR.js"],
-    category: "web",
-  },
-  {
-    repo: "GrupoMML/Campus-Compass",
-    title: "Campus Compass",
-    description: {
-      en: "A website that helps students choose a Portuguese university, with universities browsable by region, a national ranking for comparison and a vocational test. Group project.",
-      pt: "Um site que ajuda os estudantes a escolher uma universidade portuguesa, com universidades organizadas por região, um ranking nacional para comparação e um teste vocacional. Projeto de grupo.",
-    },
-    icon: "fa-solid fa-compass",
-    logo: "projects/campus-compass.png",
-    logoBg: "#e6ebf7",
-    tech: ["HTML", "CSS", "JavaScript"],
-    category: "web",
-  },
-  {
-    repo: "snowman-cg",
-    title: "3D Snowman",
-    description: {
-      en: "An interactive 3D scene built with Three.js. Pressing M makes the snowman melt into a puddle as his hat falls, and Space throws snowballs. It includes falling snow, moving clouds and dynamic shadows.",
-      pt: "Uma cena 3D interativa desenvolvida com Three.js. A tecla M faz o boneco de neve derreter numa poça enquanto o chapéu cai, e a barra de espaço lança bolas de neve. Inclui neve a cair, nuvens em movimento e sombras dinâmicas.",
-    },
-    icon: "fa-solid fa-snowman",
-    tech: ["Three.js", "JavaScript", "WebGL"],
-    category: "games",
-  },
 ];
 
 // Repos left out of the Projects section: class exercises, forks of other
-// people's projects, and earlier versions of a project listed above
+// people's projects, earlier versions of a project listed above, and
+// front-end or graphics work outside the back-end focus
 export const hiddenRepos = [
   "AED-REPO",
   "comp-grafica",
@@ -270,4 +230,6 @@ export const hiddenRepos = [
   "flutter",
   "nosql-databases-labs",
   "pw1-Modo",
+  "portfolio",
+  "snowman-cg",
 ];

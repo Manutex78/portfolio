@@ -4,13 +4,10 @@ import { Contact } from "./components/Contact";
 import { FloatingActions } from "./components/FloatingActions";
 import { Footer } from "./components/Footer";
 import { Header } from "./components/Header";
-import { Marquee } from "./components/Marquee";
 import { MissionLog } from "./components/MissionLog";
 import { Hero, type HeroStats } from "./components/Hero";
-import { PageLoader } from "./components/PageLoader";
 import { Projects } from "./components/Projects";
 import { Skills } from "./components/Skills";
-import { Starfield } from "./components/Starfield";
 import { curatedProjects, GITHUB_USER, missions } from "./data/content";
 import { useGithubProjects } from "./hooks/useGithubProjects";
 import { useSectionNav } from "./hooks/useSectionNav";
@@ -48,15 +45,10 @@ export default function App() {
       <a className="skip-link" href="#about">
         {t("skip")}
       </a>
-      <PageLoader />
       <Header sections={SECTIONS} activeId={activeId} />
 
       <main id="top" tabIndex={-1}>
-        <div className="hero-space">
-          <Starfield />
-          <Hero stats={stats} statsLoading={github.status === "loading" && !!GITHUB_USER} />
-        </div>
-        <Marquee />
+        <Hero stats={stats} statsLoading={github.status === "loading" && !!GITHUB_USER} />
         <About />
         <MissionLog />
         <Skills />

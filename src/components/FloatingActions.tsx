@@ -10,7 +10,7 @@ export function FloatingActions() {
   const [pastHero, setPastHero] = useState(false);
 
   useEffect(() => {
-    const hero = document.querySelector(".hero-space");
+    const hero = document.querySelector(".hero");
     if (!hero) return;
     const observer = new IntersectionObserver(([entry]) => setPastHero(!entry.isIntersecting));
     observer.observe(hero);

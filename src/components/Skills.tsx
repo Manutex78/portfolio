@@ -1,4 +1,3 @@
-import type { CSSProperties } from "react";
 import { skills } from "../data/content";
 import { LOGOS } from "../data/logos";
 import { useI18n } from "../i18n/LanguageContext";
@@ -18,22 +17,15 @@ export function Skills() {
             delay={i}
           >
             <h3>
-              <span className="skill-icon">
-                <i className={icon} aria-hidden="true" />
-              </span>
+              <i className={`skill-icon ${icon}`} aria-hidden="true" />
               {l(title)}
               {main && <span className="main-tag">{t("skills.main")}</span>}
             </h3>
-            <ul className="logos">
-              {items.map((tech, index) => (
-                <li key={tech} title={tech} style={{ "--i": index } as CSSProperties}>
-                  <img
-                    src={`logos/${LOGOS[tech]}.svg`}
-                    alt={tech}
-                    width={30}
-                    height={30}
-                    loading="lazy"
-                  />
+            <ul className="tech-list">
+              {items.map((tech) => (
+                <li key={tech}>
+                  <img src={`logos/${LOGOS[tech]}.svg`} alt="" width={18} height={18} loading="lazy" />
+                  {tech}
                 </li>
               ))}
             </ul>

@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from "react";
-import { AVAILABILITY, FULL_NAME, NAME, PHOTO, ROTATING_WORDS } from "../data/content";
+import { AVAILABILITY, FULL_NAME, NAME, ROTATING_WORDS, skills, TIME_ZONE } from "../data/content";
 import { useReducedMotion } from "../hooks/useReducedMotion";
 import { useI18n } from "../i18n/LanguageContext";
 
@@ -62,29 +62,58 @@ function CountUp({ to }: { to: number }) {
   return <>{n}</>;
 }
 
-// Framed picture that lifts off its accent backing on hover; a placeholder until PHOTO exists
-function PhotoFrame() {
-  const { t } = useI18n();
-  const [missing, setMissing] = useState(false);
+// The main skill groups (back-end, then databases) make up the "stack" field
+const STACK = skills.slice(0, 2).flatMap((s) => s.items);
+
+// A JSON value with the same colours an editor would give it
+function Value({ value }: { value: string | boolean | string[] }) {
+  if (typeof value === "boolean") return <span className="tok-bool">{String(value)}</span>;
+  if (typeof value === "string") return <span className="tok-str">"{value}"</span>;
+  return (
+    <>
+      [
+      {value.map((v, i) => (
+        <span key={v}>
+          <span className="tok-str">"{v}"</span>
+          {i < value.length - 1 && ", "}
+        </span>
+      ))}
+      ]
+    </>
+  );
+}
+
+// "Who I am" as an API response: the one code flourish on the page.
+// Decorative for screen readers, since the copy beside it says the same thing.
+function ResponseCard() {
+  const fields: [string, string | boolean | string[]][] = [
+    ["name", FULL_NAME],
+    ["role", "back-end developer"],
+    ["stack", STACK],
+    ["timezone", TIME_ZONE],
+    ["available", !!AVAILABILITY],
+  ];
 
   return (
-    <figure className="photo-frame">
-      <span className="photo-backing" aria-hidden="true" />
-      <span className="photo-card">
-        {missing ? (
-          <span className="photo-placeholder">
-            <i className="fa-solid fa-camera" aria-hidden="true" />
-            {t("hero.photoPlaceholder")}
-          </span>
-        ) : (
-          <img src={PHOTO} alt={FULL_NAME} onError={() => setMissing(true)} />
-        )}
-        <span className="photo-tag" aria-hidden="true">
-          {NAME}
-        </span>
-      </span>
-      <span className="photo-corner photo-corner--tl" aria-hidden="true" />
-      <span className="photo-corner photo-corner--br" aria-hidden="true" />
+    <figure className="response-card" aria-hidden="true">
+      <figcaption className="response-head">
+        <span className="method method--get">GET</span>
+        <span className="response-path">/api/me</span>
+        <span className="response-status">200 OK</span>
+      </figcaption>
+      <pre>
+        <code>
+          {"{\n"}
+          {fields.map(([key, value], i) => (
+            <span key={key}>
+              {"  "}
+              <span className="tok-key">"{key}"</span>: <Value value={value} />
+              {i < fields.length - 1 ? ",\n" : "\n"}
+            </span>
+          ))}
+          {"}"}
+        </code>
+      </pre>
     </figure>
   );
 }
@@ -113,17 +142,17 @@ export function Hero({ stats, statsLoading }: HeroProps) {
           </p>
         )}
         <h1 id="hero-title">
-          {t("hero.greeting")} <span className="name-gradient">{NAME}</span>.
+          {t("hero.greeting")} <span className="hero-name">{NAME}</span>.
         </h1>
         <p className="hero-sub">
           {t("hero.sub")} <RotatingWord />
         </p>
         <div className="hero-cta">
           <a className="btn btn-primary" href="#projects">
-            <i className="fa-solid fa-rocket" aria-hidden="true" /> {t("hero.ctaWork")}
+            {t("hero.ctaWork")} <i className="fa-solid fa-arrow-right" aria-hidden="true" />
           </a>
           <a className="btn btn-ghost" href="#contact">
-            <i className="fa-solid fa-satellite-dish" aria-hidden="true" /> {t("hero.ctaContact")}
+            {t("hero.ctaContact")}
           </a>
         </div>
 
@@ -149,12 +178,8 @@ export function Hero({ stats, statsLoading }: HeroProps) {
       </div>
 
       <div className="hero-art">
-        <PhotoFrame />
+        <ResponseCard />
       </div>
-
-      <a className="scroll-cue" href="#about" aria-label={t("hero.scroll")}>
-        <span />
-      </a>
     </section>
   );
 }

@@ -6,7 +6,6 @@ const en = {
   "meta.description":
     "Manuel Teixeira — back-end focused web developer and Web Technologies and Development student at FMAD (UTP). Projects, skills and contact.",
   skip: "Skip to content",
-  "loader.page": "Waiting for moonrise…",
 
   "nav.label": "Main navigation",
   "nav.about": "About",
@@ -17,7 +16,6 @@ const en = {
   "header.menuOpen": "Open menu",
   "header.menuClose": "Close menu",
   "header.language": "Language",
-  "header.tonight": "Tonight's moon: {phase}",
   "header.linkedin": "LinkedIn profile",
   "header.planet": "Accent colour",
   "header.settings": "Display settings",
@@ -37,19 +35,18 @@ const en = {
   "hero.statTech": "Technologies used",
   "hero.statYears": "Years in IT",
   "hero.loading": "Loading",
-  "hero.scroll": "Scroll to About",
-  "hero.photoPlaceholder": "Your photo here",
 
   "about.title": "About me",
+  "about.role": "Back-end developer",
   "about.p1":
     "I'm a web developer focused on the back-end, currently studying **Web Technologies and Development at FMAD** (UTP). My path in IT began with a three-year vocational course and an internship diagnosing and repairing hardware and software, which taught me to approach problems methodically. I learn best by building: most of my projects started as something I wanted to exist.",
   "about.p2":
-    "I specialise in the **back-end**: designing REST APIs with Node.js and Express, modelling relational data with Sequelize and MySQL, and writing Python scripts to generate and manage data. I also build front-ends in Vue and React, as well as browser games and 3D/VR scenes. I'm currently deepening my knowledge of **TypeScript** and **React**, the technologies behind this website.",
-  "about.p3": "I'm available for internships, freelance projects and collaborations, particularly in back-end development.",
+    "I specialise in the **back-end**: designing REST APIs with Node.js and Express, modelling relational data with Sequelize and MySQL, and writing Python scripts to generate and manage data. I care about clean data models, predictable API design and code that's easy to test, and I'm currently deepening my knowledge of **TypeScript** to bring stronger typing to server-side code.",
+  "about.p3": "I'm available for back-end internships, freelance projects and collaborations.",
   "fact.focus": "Focus",
   "fact.focusValue": "Back-end · Node.js, Express & MySQL",
   "fact.builds": "Develops",
-  "fact.buildsValue": "APIs, databases, web apps, games",
+  "fact.buildsValue": "REST APIs, data models, scripts",
   "fact.studying": "Studying",
   "fact.studyingValue": "Web Technologies & Development @ FMAD",
   "fact.speaks": "Languages",
@@ -87,6 +84,8 @@ const en = {
   "projects.showAll": "Show all {n}",
   "projects.showFewer": "Show fewer",
   "card.featured": "Featured",
+  "card.endpoints": "Endpoints",
+  "card.schema": "Data model",
   "card.updated": "Updated {time}",
   "card.onGithub": "{title} on GitHub",
   "card.liveSite": "{title} live site",
@@ -109,38 +108,13 @@ const en = {
   "contact.copyLabel": "Copy email address",
   "contact.time": "It's **{time}** in Portugal",
 
-  "footer.tonight": "Tonight's moon:",
-  "footer.lit": "{n}% lit",
-  "footer.fullTomorrow": "full tomorrow",
-  "footer.fullIn": "full in {n} days",
   "footer.built": "Designed & built by {name} with React",
   "footer.tagline": "Back-end focused web developer and Web Technologies student, based in Portugal.",
   "footer.explore": "Explore",
   "footer.elsewhere": "Elsewhere",
-
-  "moon.phase0": "New moon",
-  "moon.phase1": "Waxing crescent",
-  "moon.phase2": "First quarter",
-  "moon.phase3": "Waxing gibbous",
-  "moon.phase4": "Full moon",
-  "moon.phase5": "Waning gibbous",
-  "moon.phase6": "Last quarter",
-  "moon.phase7": "Waning crescent",
 };
 
 export type UIKey = keyof typeof en;
-
-// Phase names indexed by MoonPhase.index (0–7)
-export const MOON_PHASES = [
-  "moon.phase0",
-  "moon.phase1",
-  "moon.phase2",
-  "moon.phase3",
-  "moon.phase4",
-  "moon.phase5",
-  "moon.phase6",
-  "moon.phase7",
-] as const satisfies readonly UIKey[];
 
 // Record<UIKey, string> makes a missing Portuguese key a type error
 const pt: Record<UIKey, string> = {
@@ -148,7 +122,6 @@ const pt: Record<UIKey, string> = {
   "meta.description":
     "Manuel Teixeira — programador web focado em back-end e estudante de Tecnologias e Desenvolvimento Web na FMAD (UTP). Projetos, competências e contacto.",
   skip: "Saltar para o conteúdo",
-  "loader.page": "À espera do nascer da Lua…",
 
   "nav.label": "Navegação principal",
   "nav.about": "Sobre",
@@ -159,7 +132,6 @@ const pt: Record<UIKey, string> = {
   "header.menuOpen": "Abrir menu",
   "header.menuClose": "Fechar menu",
   "header.language": "Idioma",
-  "header.tonight": "A Lua esta noite: {phase}",
   "header.linkedin": "Perfil no LinkedIn",
   "header.planet": "Cor de destaque",
   "header.settings": "Definições de visualização",
@@ -179,19 +151,18 @@ const pt: Record<UIKey, string> = {
   "hero.statTech": "Tecnologias usadas",
   "hero.statYears": "Anos em informática",
   "hero.loading": "A carregar",
-  "hero.scroll": "Ir para Sobre",
-  "hero.photoPlaceholder": "A tua foto aqui",
 
   "about.title": "Sobre mim",
+  "about.role": "Programador back-end",
   "about.p1":
     "Sou programador web com foco em back-end e estudo **Tecnologias e Desenvolvimento Web na FMAD** (UTP). O meu percurso em informática começou com um curso profissional de três anos e um estágio em diagnóstico e reparação de hardware e software, que me ensinou a abordar os problemas de forma metódica. Aprendo sobretudo a construir: a maioria dos meus projetos nasceu de algo que eu queria que existisse.",
   "about.p2":
-    "A minha especialidade é o **back-end**: desenvolvimento de APIs REST com Node.js e Express, modelação de dados relacionais com Sequelize e MySQL e scripts em Python para gerar e gerir dados. Desenvolvo também front-ends em Vue e React, jogos para o browser e cenas 3D/VR. Atualmente, estou a aprofundar **TypeScript** e **React**, as tecnologias com que este site foi construído.",
-  "about.p3": "Estou disponível para estágios, projetos freelance e colaborações, em particular na área de back-end.",
+    "A minha especialidade é o **back-end**: desenvolvimento de APIs REST com Node.js e Express, modelação de dados relacionais com Sequelize e MySQL e scripts em Python para gerar e gerir dados. Valorizo modelos de dados limpos, APIs previsíveis e código fácil de testar, e estou atualmente a aprofundar **TypeScript** para trazer tipagem mais forte ao código de servidor.",
+  "about.p3": "Estou disponível para estágios, projetos freelance e colaborações na área de back-end.",
   "fact.focus": "Foco",
   "fact.focusValue": "Back-end · Node.js, Express e MySQL",
   "fact.builds": "Desenvolve",
-  "fact.buildsValue": "APIs, bases de dados, apps web, jogos",
+  "fact.buildsValue": "APIs REST, modelos de dados, scripts",
   "fact.studying": "Estuda",
   "fact.studyingValue": "Tecnologias e Desenvolvimento Web @ FMAD",
   "fact.speaks": "Idiomas",
@@ -229,6 +200,8 @@ const pt: Record<UIKey, string> = {
   "projects.showAll": "Mostrar todos ({n})",
   "projects.showFewer": "Mostrar menos",
   "card.featured": "Destaque",
+  "card.endpoints": "Endpoints",
+  "card.schema": "Modelo de dados",
   "card.updated": "Atualizado {time}",
   "card.onGithub": "{title} no GitHub",
   "card.liveSite": "Site de {title}",
@@ -251,23 +224,10 @@ const pt: Record<UIKey, string> = {
   "contact.copyLabel": "Copiar endereço de email",
   "contact.time": "Em Portugal são **{time}**",
 
-  "footer.tonight": "A Lua esta noite:",
-  "footer.lit": "{n}% iluminada",
-  "footer.fullTomorrow": "cheia amanhã",
-  "footer.fullIn": "cheia daqui a {n} dias",
   "footer.built": "Desenhado e desenvolvido por {name} com React",
   "footer.tagline": "Programador web focado em back-end e estudante de Tecnologias Web, a viver em Portugal.",
   "footer.explore": "Explorar",
   "footer.elsewhere": "Noutros sítios",
-
-  "moon.phase0": "Lua Nova",
-  "moon.phase1": "Lua Crescente",
-  "moon.phase2": "Quarto Crescente",
-  "moon.phase3": "Crescente Gibosa",
-  "moon.phase4": "Lua Cheia",
-  "moon.phase5": "Minguante Gibosa",
-  "moon.phase6": "Quarto Minguante",
-  "moon.phase7": "Lua Minguante",
 };
 
 export const ui = { en, pt };

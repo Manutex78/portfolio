@@ -1,10 +1,8 @@
 import { useEffect, useLayoutEffect, useRef, useState } from "react";
-import { useMoonPhase } from "../hooks/useMoonPhase";
 import { PLANETS, usePlanet, type Planet } from "../hooks/usePlanet";
 import { useI18n } from "../i18n/LanguageContext";
 import { LOCALE, type Lang } from "../i18n/types";
-import { MOON_PHASES, type UIKey } from "../i18n/ui";
-import { MoonIcon } from "./MoonIcon";
+import type { UIKey } from "../i18n/ui";
 
 interface HeaderProps {
   sections: { id: string; label: UIKey }[];
@@ -109,7 +107,6 @@ export function Header({ sections, activeId }: HeaderProps) {
   const [menuOpen, setMenuOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
   const { t, lang } = useI18n();
-  const moon = useMoonPhase();
   const navRef = useRef<HTMLElement>(null);
   const indicatorRef = useRef<HTMLSpanElement>(null);
   const progressRef = useRef<HTMLDivElement>(null);
@@ -157,8 +154,10 @@ export function Header({ sections, activeId }: HeaderProps) {
     <>
       <div className="scroll-progress" ref={progressRef} aria-hidden="true" />
       <header className={`site-header${scrolled ? " scrolled" : ""}`}>
-        <a className="brand" href="#top" title={t("header.tonight", { phase: t(MOON_PHASES[moon.index]) })}>
-          <MoonIcon phase={moon.phase} size={20} className="brand-moon" />
+        <a className="brand" href="#top">
+          <span className="brand-prompt" aria-hidden="true">
+            &gt;_
+          </span>
           <span>
             manuel<span className="brand-dot">.</span>dev
           </span>
