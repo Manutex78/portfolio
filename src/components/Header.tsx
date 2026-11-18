@@ -1,10 +1,7 @@
 import { useEffect, useLayoutEffect, useRef, useState } from "react";
-import { useMoonPhase } from "../hooks/useMoonPhase";
-import { PLANETS, usePlanet, type Planet } from "../hooks/usePlanet";
 import { useI18n } from "../i18n/LanguageContext";
 import { LOCALE, type Lang } from "../i18n/types";
-import { MOON_PHASES, type UIKey } from "../i18n/ui";
-import { MoonIcon } from "./MoonIcon";
+import type { UIKey } from "../i18n/ui";
 
 interface HeaderProps {
   sections: { id: string; label: UIKey }[];
@@ -37,84 +34,14 @@ function LanguageSwitch() {
   );
 }
 
-// One swatch per planet accent; hovering shows the planet's name
-function PlanetSwitch({ planet, onChange }: { planet: Planet; onChange: (p: Planet) => void }) {
-  const { t } = useI18n();
-  return (
-    <div className="planet-switch" role="group" aria-label={t("header.planet")}>
-      {PLANETS.map((p) => (
-        <button
-          key={p}
-          type="button"
-          className={`planet-swatch planet-swatch--${p}`}
-          aria-pressed={planet === p}
-          aria-label={t(`planet.${p}`)}
-          data-tip={t(`planet.${p}`)}
-          onClick={() => onChange(p)}
-        />
-      ))}
-    </div>
-  );
-}
-
-// Colour and language live behind one button so the bar only carries navigation
-function SettingsMenu() {
-  const [open, setOpen] = useState(false);
-  const { planet, setPlanet } = usePlanet();
-  const { t } = useI18n();
-  const rootRef = useRef<HTMLDivElement>(null);
-
-  // Close on Escape or a click anywhere outside the panel
-  useEffect(() => {
-    if (!open) return;
-    const onKey = (e: KeyboardEvent) => e.key === "Escape" && setOpen(false);
-    const onPointer = (e: PointerEvent) => {
-      if (!rootRef.current?.contains(e.target as Node)) setOpen(false);
-    };
-    window.addEventListener("keydown", onKey);
-    document.addEventListener("pointerdown", onPointer);
-    return () => {
-      window.removeEventListener("keydown", onKey);
-      document.removeEventListener("pointerdown", onPointer);
-    };
-  }, [open]);
-
-  return (
-    <div className="settings" ref={rootRef}>
-      <button
-        className="icon-btn settings-btn"
-        type="button"
-        aria-label={t("header.settings")}
-        aria-expanded={open}
-        aria-controls="settings-panel"
-        onClick={() => setOpen((o) => !o)}
-      >
-        <i className="fa-solid fa-sliders" aria-hidden="true" />
-      </button>
-      <div className={`settings-panel${open ? " open" : ""}`} id="settings-panel" role="group" aria-label={t("header.settings")}>
-        <div className="settings-row">
-          <span className="settings-label">{t("header.planet")}</span>
-          <PlanetSwitch planet={planet} onChange={setPlanet} />
-        </div>
-        <div className="settings-row">
-          <span className="settings-label">{t("header.language")}</span>
-          <LanguageSwitch />
-        </div>
-      </div>
-    </div>
-  );
-}
-
 export function Header({ sections, activeId }: HeaderProps) {
   const [menuOpen, setMenuOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
   const { t, lang } = useI18n();
-  const moon = useMoonPhase();
   const navRef = useRef<HTMLElement>(null);
   const indicatorRef = useRef<HTMLSpanElement>(null);
-  const progressRef = useRef<HTMLDivElement>(null);
 
-  // Slide the underline to the active link (labels change width with the language)
+  // Slide the rule to the active link (labels change width with the language)
   useLayoutEffect(() => {
     const moveIndicator = () => {
       const indicator = indicatorRef.current;
@@ -131,15 +58,9 @@ export function Header({ sections, activeId }: HeaderProps) {
     return () => window.removeEventListener("resize", moveIndicator);
   }, [activeId, lang]);
 
-  // Reading progress bar + a more solid navbar once the page has scrolled.
-  // The bar is updated directly so scrolling doesn't re-render the header.
+  // The bar gets a bottom rule once the page has scrolled
   useEffect(() => {
-    const onScroll = () => {
-      const max = document.documentElement.scrollHeight - window.innerHeight;
-      const progress = max > 0 ? window.scrollY / max : 0;
-      if (progressRef.current) progressRef.current.style.transform = `scaleX(${progress})`;
-      setScrolled(window.scrollY > 24);
-    };
+    const onScroll = () => setScrolled(window.scrollY > 24);
     onScroll();
     window.addEventListener("scroll", onScroll, { passive: true });
     return () => window.removeEventListener("scroll", onScroll);
@@ -154,45 +75,39 @@ export function Header({ sections, activeId }: HeaderProps) {
   }, [menuOpen]);
 
   return (
-    <>
-      <div className="scroll-progress" ref={progressRef} aria-hidden="true" />
-      <header className={`site-header${scrolled ? " scrolled" : ""}`}>
-        <a className="brand" href="#top" title={t("header.tonight", { phase: t(MOON_PHASES[moon.index]) })}>
-          <MoonIcon phase={moon.phase} size={20} className="brand-moon" />
-          <span>
-            manuel<span className="brand-dot">.</span>dev
-          </span>
-        </a>
+    <header className={`site-header${scrolled ? " scrolled" : ""}`}>
+      <a className="brand" href="#top">
+        manuel<span className="brand-dot">.</span>dev
+      </a>
 
-        <nav className={`nav${menuOpen ? " open" : ""}`} id="nav" ref={navRef} aria-label={t("nav.label")}>
-          {sections.map(({ id, label }) => (
-            <a
-              key={id}
-              href={`#${id}`}
-              className={activeId === id ? "active" : undefined}
-              aria-current={activeId === id ? "true" : undefined}
-              onClick={() => setMenuOpen(false)}
-            >
-              {t(label)}
-            </a>
-          ))}
-          <span className="nav-indicator" ref={indicatorRef} aria-hidden="true" />
-        </nav>
-
-        <div className="header-actions">
-          <SettingsMenu />
-          <button
-            className="icon-btn menu-btn"
-            type="button"
-            aria-label={menuOpen ? t("header.menuClose") : t("header.menuOpen")}
-            aria-expanded={menuOpen}
-            aria-controls="nav"
-            onClick={() => setMenuOpen((o) => !o)}
+      <nav className={`nav${menuOpen ? " open" : ""}`} id="nav" ref={navRef} aria-label={t("nav.label")}>
+        {sections.map(({ id, label }) => (
+          <a
+            key={id}
+            href={`#${id}`}
+            className={activeId === id ? "active" : undefined}
+            aria-current={activeId === id ? "true" : undefined}
+            onClick={() => setMenuOpen(false)}
           >
-            <i className={`fa-solid ${menuOpen ? "fa-xmark" : "fa-bars"}`} aria-hidden="true" />
-          </button>
-        </div>
-      </header>
-    </>
+            {t(label)}
+          </a>
+        ))}
+        <span className="nav-indicator" ref={indicatorRef} aria-hidden="true" />
+      </nav>
+
+      <div className="header-actions">
+        <LanguageSwitch />
+        <button
+          className="icon-btn menu-btn"
+          type="button"
+          aria-label={menuOpen ? t("header.menuClose") : t("header.menuOpen")}
+          aria-expanded={menuOpen}
+          aria-controls="nav"
+          onClick={() => setMenuOpen((o) => !o)}
+        >
+          <i className={`fa-solid ${menuOpen ? "fa-xmark" : "fa-bars"}`} aria-hidden="true" />
+        </button>
+      </div>
+    </header>
   );
 }

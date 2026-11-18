@@ -1,24 +1,44 @@
-import { AVAILABILITY } from "../data/content";
+import { useState } from "react";
+import { AVAILABILITY, FULL_NAME, PHOTO } from "../data/content";
 import { useI18n } from "../i18n/LanguageContext";
 import { Rich } from "../i18n/Rich";
-import { Reveal, SectionTitle } from "./Reveal";
+
+// Shows PHOTO once it has loaded; while the file doesn't exist, nothing takes its place
+function Portrait() {
+  const [state, setState] = useState<"loading" | "ready" | "missing">("loading");
+  if (state === "missing") return null;
+  return (
+    <img
+      className="portrait"
+      src={PHOTO}
+      alt={FULL_NAME}
+      hidden={state !== "ready"}
+      onLoad={() => setState("ready")}
+      onError={() => setState("missing")}
+    />
+  );
+}
 
 export function About() {
   const { t, l } = useI18n();
 
   const facts = [
-    { icon: "fa-solid fa-server", label: t("fact.focus"), value: t("fact.focusValue") },
-    { icon: "fa-solid fa-layer-group", label: t("fact.builds"), value: t("fact.buildsValue") },
-    { icon: "fa-solid fa-graduation-cap", label: t("fact.studying"), value: t("fact.studyingValue") },
-    { icon: "fa-solid fa-language", label: t("fact.speaks"), value: t("fact.speaksValue") },
-    ...(AVAILABILITY ? [{ icon: "fa-solid fa-satellite-dish", label: t("fact.status"), value: l(AVAILABILITY) }] : []),
+    { label: t("fact.focus"), value: t("fact.focusValue") },
+    { label: t("fact.builds"), value: t("fact.buildsValue") },
+    { label: t("fact.studying"), value: t("fact.studyingValue") },
+    { label: t("fact.speaks"), value: t("fact.speaksValue") },
+    ...(AVAILABILITY ? [{ label: t("fact.status"), value: l(AVAILABILITY) }] : []),
   ];
 
   return (
-    <section className="section container" id="about" tabIndex={-1}>
-      <SectionTitle index="01">{t("about.title")}</SectionTitle>
-      <div className="about-grid">
-        <Reveal className="about-text">
+    <section className="section section--split container" id="about" tabIndex={-1}>
+      <div className="section-head">
+        <h2 className="section-title">{t("about.title")}</h2>
+        <Portrait />
+      </div>
+
+      <div>
+        <div className="prose">
           <p>
             <Rich text={t("about.p1")} />
           </p>
@@ -26,23 +46,16 @@ export function About() {
             <Rich text={t("about.p2")} />
           </p>
           <p>{t("about.p3")}</p>
-        </Reveal>
+        </div>
 
-        <Reveal className="about-card" delay={1}>
-          <div className="avatar" aria-hidden="true">
-            <span>M</span>
-          </div>
-          <dl className="facts">
-            {facts.map(({ icon, label, value }) => (
-              <div key={icon}>
-                <dt>
-                  <i className={icon} aria-hidden="true" /> {label}
-                </dt>
-                <dd>{value}</dd>
-              </div>
-            ))}
-          </dl>
-        </Reveal>
+        <dl className="facts">
+          {facts.map(({ label, value }) => (
+            <div key={label}>
+              <dt>{label}</dt>
+              <dd>{value}</dd>
+            </div>
+          ))}
+        </dl>
       </div>
     </section>
   );

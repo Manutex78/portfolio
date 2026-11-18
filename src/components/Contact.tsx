@@ -3,7 +3,6 @@ import { EMAIL, TIME_ZONE } from "../data/content";
 import { SOCIALS } from "../data/socials";
 import { useI18n } from "../i18n/LanguageContext";
 import { Rich } from "../i18n/Rich";
-import { Reveal, SectionTitle } from "./Reveal";
 
 // The time in Portugal, ticking over on the minute
 function LocalTime() {
@@ -53,29 +52,30 @@ export function Contact() {
 
   return (
     <section className="section container" id="contact" tabIndex={-1}>
-      <SectionTitle index="05" center>
-        {t("contact.title")}
-      </SectionTitle>
-      <Reveal className="contact-card">
-        <p className="contact-lead">{t("contact.lead")}</p>
-        <p className="contact-text">{t("contact.text")}</p>
-        <LocalTime />
+      <div className="contact-panel invert">
+        <div>
+          <h2 className="contact-lead">{t("contact.lead")}</h2>
+          <p className="contact-text">{t("contact.text")}</p>
+          <LocalTime />
+        </div>
 
-        <div className="contact-actions">
+        <div className="contact-side">
+          <a className="btn btn-primary" href={`mailto:${EMAIL}`}>
+            <i className="fa-solid fa-envelope" aria-hidden="true" /> {t("contact.email")}
+          </a>
           <button type="button" className="btn btn-ghost copy-btn" onClick={copyEmail} title={t("contact.copyLabel")}>
             <i className={`fa-solid ${copied ? "fa-check" : "fa-copy"}`} aria-hidden="true" />
             <span aria-live="polite">{copied ? t("contact.copied") : EMAIL}</span>
           </button>
+          <div className="socials">
+            {SOCIALS.map((s) => (
+              <a key={s.label} href={s.href} target="_blank" rel="noopener noreferrer">
+                <i className={`fa-brands ${s.icon}`} aria-hidden="true" /> {s.label}
+              </a>
+            ))}
+          </div>
         </div>
-
-        <div className="socials">
-          {SOCIALS.map((s) => (
-            <a key={s.label} href={s.href} target="_blank" rel="noopener noreferrer">
-              <i className={`fa-brands ${s.icon}`} aria-hidden="true" /> {s.label}
-            </a>
-          ))}
-        </div>
-      </Reveal>
+      </div>
     </section>
   );
 }

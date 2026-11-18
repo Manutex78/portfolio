@@ -1,160 +1,118 @@
-import { useEffect, useMemo, useState } from "react";
-import { AVAILABILITY, FULL_NAME, NAME, PHOTO, ROTATING_WORDS } from "../data/content";
-import { useReducedMotion } from "../hooks/useReducedMotion";
+import { Fragment } from "react";
+import { AVAILABILITY, FULL_NAME, skills } from "../data/content";
+import { SOCIALS } from "../data/socials";
 import { useI18n } from "../i18n/LanguageContext";
+import { TechLogo } from "./TechLogo";
 
-export interface HeroStats {
-  projects: number;
-  technologies: number;
-  yearsInIt: number;
+type JsonValue = string | boolean | string[];
+
+const API_PATH = `/api/developers/${FULL_NAME.toLowerCase().replace(/\s+/g, "-")}`;
+
+function JsonLeaf({ value }: { value: string | boolean }) {
+  return typeof value === "string" ? <>"{value}"</> : <span className="json-literal">{String(value)}</span>;
 }
 
-// Cycles "APIs" → "databases" → "server logic"; with reduced motion, lists them all instead
-function RotatingWord() {
-  const [index, setIndex] = useState(0);
-  const reducedMotion = useReducedMotion();
-  const { l, locale } = useI18n();
-  // Only changes with the language, not on every rotation tick
-  const [words, list] = useMemo(() => {
-    const words = ROTATING_WORDS.map(l);
-    return [words, new Intl.ListFormat(locale, { type: "conjunction" }).format(words)] as const;
-  }, [l, locale]);
-
-  useEffect(() => {
-    if (reducedMotion) return;
-    const timer = setInterval(() => setIndex((i) => (i + 1) % ROTATING_WORDS.length), 2600);
-    return () => clearInterval(timer);
-  }, [reducedMotion]);
-
-  if (reducedMotion) return <span className="accent-text">{list}</span>;
-
-  return (
-    <>
-      <span className="rotating-word" aria-hidden="true">
-        <span key={`${locale}-${index}`} className="accent-text">
-          {words[index]}
-        </span>
-      </span>
-      <span className="visually-hidden">{list}</span>
-    </>
-  );
-}
-
-// Counts up to `to` with an ease-out; with reduced motion, shows the number straight away
-function CountUp({ to }: { to: number }) {
-  const reducedMotion = useReducedMotion();
-  const [n, setN] = useState(reducedMotion ? to : 0);
-
-  useEffect(() => {
-    if (reducedMotion) {
-      setN(to);
-      return;
-    }
-    const start = performance.now();
-    let frame = requestAnimationFrame(function tick(now) {
-      const p = Math.min((now - start) / 900, 1);
-      setN(Math.round(to * (1 - (1 - p) ** 3)));
-      if (p < 1) frame = requestAnimationFrame(tick);
-    });
-    return () => cancelAnimationFrame(frame);
-  }, [to, reducedMotion]);
-
-  return <>{n}</>;
-}
-
-// Framed picture that lifts off its accent backing on hover; a placeholder until PHOTO exists
-function PhotoFrame() {
+// The profile written out as the response of a REST endpoint: the kind of thing this developer builds
+function ApiCard() {
   const { t } = useI18n();
-  const [missing, setMissing] = useState(false);
+  const profile: [string, JsonValue][] = [
+    ["name", FULL_NAME],
+    ["role", t("hero.role")],
+    ["stack", skills.find((s) => s.main)?.items ?? []],
+    ["studying", t("fact.studyingValue")],
+    ["location", "Portugal"],
+    ["languages", ["pt", "en"]],
+    ["available", AVAILABILITY !== null],
+  ];
 
   return (
-    <figure className="photo-frame">
-      <span className="photo-backing" aria-hidden="true" />
-      <span className="photo-card">
-        {missing ? (
-          <span className="photo-placeholder">
-            <i className="fa-solid fa-camera" aria-hidden="true" />
-            {t("hero.photoPlaceholder")}
-          </span>
-        ) : (
-          <img src={PHOTO} alt={FULL_NAME} onError={() => setMissing(true)} />
-        )}
-        <span className="photo-tag" aria-hidden="true">
-          {NAME}
-        </span>
-      </span>
-      <span className="photo-corner photo-corner--tl" aria-hidden="true" />
-      <span className="photo-corner photo-corner--br" aria-hidden="true" />
+    <figure className="api-card invert" aria-label={t("hero.panelLabel")}>
+      <p className="api-request">
+        <span className="api-method">GET</span>
+        <span className="api-path">{API_PATH}</span>
+      </p>
+      <p className="api-status">
+        <strong>200 OK</strong>
+        <span>application/json</span>
+      </p>
+      <pre>
+        <code>
+          {"{\n"}
+          {profile.map(([key, value], i) => (
+            <Fragment key={key}>
+              {"  "}
+              <span className="json-key">"{key}"</span>
+              {": "}
+              {Array.isArray(value) ? (
+                // Short lists stay on one line; longer ones get a line per item
+                <>
+                  [{value.length > 3 && "\n    "}
+                  {value.map((item, j) => (
+                    <Fragment key={item}>
+                      <JsonLeaf value={item} />
+                      {j < value.length - 1 && (value.length > 3 ? ",\n    " : ", ")}
+                    </Fragment>
+                  ))}
+                  {value.length > 3 && "\n  "}]
+                </>
+              ) : (
+                <JsonLeaf value={value} />
+              )}
+              {i < profile.length - 1 && ","}
+              {"\n"}
+            </Fragment>
+          ))}
+          {"}"}
+        </code>
+      </pre>
     </figure>
   );
 }
 
-interface HeroProps {
-  /** null hides the stats row unless it's still loading */
-  stats: HeroStats | null;
-  statsLoading: boolean;
-}
-
-export function Hero({ stats, statsLoading }: HeroProps) {
+export function Hero() {
   const { t, l } = useI18n();
-  const statItems = [
-    { label: t("hero.statProjects"), value: stats?.projects },
-    { label: t("hero.statTech"), value: stats?.technologies },
-    { label: t("hero.statYears"), value: stats?.yearsInIt, suffix: "+" },
-  ];
+  const stack = skills.find((s) => s.main)?.items ?? [];
 
   return (
     <section className="hero container" aria-labelledby="hero-title">
       <div className="hero-copy">
         {AVAILABILITY && (
-          <p className="status-pill">
-            <span className="status-dot" aria-hidden="true" />
+          <p className="availability">
+            <span className="availability-dot" aria-hidden="true" />
             {l(AVAILABILITY)}
           </p>
         )}
-        <h1 id="hero-title">
-          {t("hero.greeting")} <span className="name-gradient">{NAME}</span>.
-        </h1>
-        <p className="hero-sub">
-          {t("hero.sub")} <RotatingWord />
-        </p>
+        <h1 id="hero-title">{FULL_NAME}</h1>
+        <p className="hero-role">{t("hero.role")}</p>
+        <p className="hero-lead">{t("hero.lead")}</p>
         <div className="hero-cta">
           <a className="btn btn-primary" href="#projects">
-            <i className="fa-solid fa-rocket" aria-hidden="true" /> {t("hero.ctaWork")}
+            {t("hero.ctaWork")}
           </a>
           <a className="btn btn-ghost" href="#contact">
-            <i className="fa-solid fa-satellite-dish" aria-hidden="true" /> {t("hero.ctaContact")}
+            {t("hero.ctaContact")}
           </a>
+          {SOCIALS.slice(0, 2).map((s) => (
+            <a key={s.label} className="icon-btn" href={s.href} target="_blank" rel="noopener noreferrer" aria-label={s.label} title={s.label}>
+              <i className={`fa-brands ${s.icon}`} aria-hidden="true" />
+            </a>
+          ))}
         </div>
-
-        {(stats || statsLoading) && (
-          <dl className="hero-stats">
-            {statItems.map(({ label, value, suffix }) => (
-              <div key={label}>
-                <dt>{label}</dt>
-                <dd>
-                  {value === undefined ? (
-                    <span className="stat-skeleton" aria-label={t("hero.loading")} />
-                  ) : (
-                    <>
-                      <CountUp to={value} />
-                      {suffix}
-                    </>
-                  )}
-                </dd>
-              </div>
-            ))}
-          </dl>
-        )}
       </div>
 
-      <div className="hero-art">
-        <PhotoFrame />
-      </div>
+      <ApiCard />
 
-      <a className="scroll-cue" href="#about" aria-label={t("hero.scroll")}>
-        <span />
-      </a>
+      {/* The stack to be hired for, across the foot of the hero */}
+      <div className="hero-stack">
+        <h2>{t("hero.stack")}</h2>
+        <ul>
+          {stack.map((tech) => (
+            <li key={tech}>
+              <TechLogo tech={tech} />
+            </li>
+          ))}
+        </ul>
+      </div>
     </section>
   );
 }

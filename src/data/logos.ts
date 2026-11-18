@@ -1,4 +1,4 @@
-// Tech logos for the skills cards, from Devicon (public/logos/<file>.svg).
+// Tech logos for the hero stack and the skills chips, from Devicon (public/logos/<file>.svg).
 // A skill can only use a name listed here, so a typo is a type error.
 export const LOGOS = {
   "Node.js": "nodejs",
@@ -14,8 +14,6 @@ export const LOGOS = {
   React: "react",
   Bootstrap: "bootstrap",
   "Chart.js": "chartjs",
-  "Three.js": "threejs",
-  "A-Frame": "aframe",
   Git: "git",
   GitHub: "github",
   "VS Code": "vscode",

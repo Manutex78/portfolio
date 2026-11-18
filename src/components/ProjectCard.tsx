@@ -1,21 +1,17 @@
 import { memo } from "react";
 import type { Project } from "../data/content";
 import { useI18n } from "../i18n/LanguageContext";
-import { LANGUAGE_COLOR, timeAgo } from "../lib/github";
+import { timeAgo } from "../lib/github";
 
 export const ProjectCard = memo(function ProjectCard({ project: p }: { project: Project }) {
   const { t, l, locale } = useI18n();
   const href = p.demo || p.github;
-  const languageColor = p.language && LANGUAGE_COLOR[p.language];
   const description = l(p.description) || t("card.noDescription");
 
   return (
-    <article className={`project-card${p.featured ? " project-card--featured" : ""}`}>
+    <article className={`project-card${p.featured ? " project-card--featured invert" : ""}`}>
       <div className="project-top">
-        <span
-          className={`project-icon${p.logo ? " project-icon--logo" : ""}`}
-          style={p.logoBg ? { background: p.logoBg } : undefined}
-        >
+        <span className={`project-icon${p.logo ? " project-icon--logo" : ""}`}>
           {p.logo ? <img src={p.logo} alt="" width={30} height={30} /> : <i className={p.icon} aria-hidden="true" />}
         </span>
         <div className="project-links">
@@ -41,7 +37,7 @@ export const ProjectCard = memo(function ProjectCard({ project: p }: { project: 
         ) : (
           p.title
         )}
-        {p.featured && <span className="featured-tag">{t("card.featured")}</span>}
+        {p.featured && <span className="tag tag--accent">{t("card.featured")}</span>}
       </h3>
       <p className="project-desc">{description}</p>
 
@@ -56,7 +52,7 @@ export const ProjectCard = memo(function ProjectCard({ project: p }: { project: 
       <div className="project-meta">
         {p.language && (
           <span>
-            <span className="lang-dot" style={{ background: languageColor || "var(--muted)" }} aria-hidden="true" />
+            <span className="lang-dot" aria-hidden="true" />
             {p.language}
           </span>
         )}
@@ -66,7 +62,7 @@ export const ProjectCard = memo(function ProjectCard({ project: p }: { project: 
           </span>
         )}
         {p.badges?.map((b) => (
-          <span key={b} className="badge">
+          <span key={b} className="tag">
             <i className={b === "Fork" ? "fa-solid fa-code-fork" : "fa-solid fa-box-archive"} aria-hidden="true" />{" "}
             {t(`badge.${b}`)}
           </span>

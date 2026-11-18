@@ -22,30 +22,24 @@ export const INSTAGRAM_USER: string | null = "_7manu8_";
 // WhatsApp number in international format, digits only (e.g. "351912345678"); set to null to hide the button
 export const WHATSAPP_NUMBER: string | null = null;
 
-// Your picture for the hero frame: put the file in /public. Until it exists, the frame shows a placeholder
-export const PHOTO = "/photo.jpg";
+// Your picture for the About section: put the file in /public. Until it exists, no picture is shown
+export const PHOTO = "photo.jpg";
 
 // The contact section shows the current time here, so people know when you're awake
 export const TIME_ZONE = "Europe/Lisbon";
 
-// Shown in the hero status pill; set to null to hide it
+// Shown above the name in the hero and in the About facts; set to null to hide it
 export const AVAILABILITY: Localized | null = {
-  // U+2011 non-breaking hyphens keep "back-end" on one line in the narrow pill
+  // U+2011 non-breaking hyphens keep "back-end" on one line
   en: "Available for back‑end internships & freelance",
   pt: "Disponível para estágios e freelance em back‑end",
 };
 
-// The hero headline cycles through these: "Back-end developer focused on …"
-export const ROTATING_WORDS: Text[] = [
-  "APIs",
-  { en: "databases", pt: "bases de dados" },
-  { en: "server logic", pt: "lógica de servidor" },
-];
-
 export interface SkillGroup {
   title: Text;
+  /** Not shown; kept as a stable id for the group */
   icon: string;
-  /** Shown as logos; names come from src/data/logos.ts */
+  /** Names come from src/data/logos.ts, so a typo is a type error */
   items: Tech[];
   /** Projects (by title) where these skills show up */
   usedIn?: string[];
@@ -55,7 +49,6 @@ export interface SkillGroup {
 }
 
 // Grouped from what the projects below actually use; back-end leads.
-// Six groups fill the 2 × 3 grid.
 export const skills: SkillGroup[] = [
   {
     title: { en: "Back-end & data", pt: "Back-end e dados" },
@@ -73,13 +66,7 @@ export const skills: SkillGroup[] = [
     title: "Front-end",
     icon: "fa-solid fa-layer-group",
     items: ["Vue 3", "React", "Bootstrap", "Chart.js"],
-    usedIn: ["Modo", "TeachMe", "BinBlast"],
-  },
-  {
-    title: { en: "Graphics, games & XR", pt: "Gráficos, jogos e XR" },
-    icon: "fa-solid fa-cube",
-    items: ["Three.js", "A-Frame"],
-    usedIn: ["3D Snowman", "BinBlast", "TeachMe"],
+    usedIn: ["Modo", "TeachMe"],
   },
   {
     title: { en: "Tools", pt: "Ferramentas" },
@@ -160,8 +147,6 @@ export interface Project {
   icon: string;
   /** The project's own logo, from /public (e.g. "projects/modo.png") */
   logo?: string;
-  /** Background behind the logo, in the project's brand color */
-  logoBg?: string;
   tech: string[];
   /** One of: fullstack, web, games, desktop, mobile, python */
   category: Category;
@@ -191,7 +176,6 @@ export const curatedProjects: Project[] = [
     },
     icon: "fa-solid fa-seedling",
     logo: "projects/modo.png",
-    logoBg: "#d4f1e2",
     tech: ["Node.js", "Express", "Sequelize", "MySQL", "Python", "Vue 3"],
     category: "fullstack",
     featured: true,
@@ -205,7 +189,6 @@ export const curatedProjects: Project[] = [
     },
     icon: "fa-solid fa-gamepad",
     logo: "projects/gameon.png",
-    logoBg: "#1f1f23",
     tech: ["Python", "customtkinter", "Pillow"],
     category: "desktop",
   },
@@ -218,7 +201,6 @@ export const curatedProjects: Project[] = [
     },
     icon: "fa-solid fa-recycle",
     logo: "projects/binblast.png",
-    logoBg: "#fff1d6",
     tech: ["JavaScript", "Canvas", "ML5.js", "Bootstrap"],
     category: "games",
   },
@@ -231,7 +213,6 @@ export const curatedProjects: Project[] = [
     },
     icon: "fa-solid fa-chalkboard-user",
     logo: "projects/teachme.png",
-    logoBg: "#fff1de",
     tech: ["JavaScript", "Bootstrap", "A-Frame", "AR.js"],
     category: "web",
   },
@@ -244,7 +225,6 @@ export const curatedProjects: Project[] = [
     },
     icon: "fa-solid fa-compass",
     logo: "projects/campus-compass.png",
-    logoBg: "#e6ebf7",
     tech: ["HTML", "CSS", "JavaScript"],
     category: "web",
   },

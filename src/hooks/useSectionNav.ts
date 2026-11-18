@@ -51,13 +51,6 @@ export function useSectionNav(ids: string[]) {
         history.replaceState(null, "", id === "top" ? location.pathname : `#${id}`);
         // Move keyboard focus along with the scroll
         target.focus({ preventScroll: true });
-        // A short "you've arrived" flourish on the section heading
-        const title = target.querySelector(".section-title");
-        if (title) {
-          title.classList.remove("arrived");
-          void (title as HTMLElement).offsetWidth; // restart the animation
-          title.classList.add("arrived");
-        }
       });
     };
 

@@ -4,7 +4,7 @@ export type Theme = "dark" | "light";
 
 // index.html applies the saved theme before paint; this keeps React in sync with it
 export function useTheme() {
-  const [theme, setTheme] = useState<Theme>(() => (document.documentElement.dataset.theme === "light" ? "light" : "dark"));
+  const [theme, setTheme] = useState<Theme>(() => (document.documentElement.dataset.theme === "dark" ? "dark" : "light"));
 
   const toggle = useCallback(() => {
     setTheme((current) => {

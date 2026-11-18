@@ -3,9 +3,7 @@ import type { Category, Project } from "../data/content";
 import type { LoadStatus } from "../hooks/useGithubProjects";
 import { useI18n } from "../i18n/LanguageContext";
 import type { UIKey } from "../i18n/ui";
-import { MoonLoader } from "./MoonLoader";
 import { ProjectCard } from "./ProjectCard";
-import { SectionTitle } from "./Reveal";
 
 type SortKey = "updated" | "stars" | "name";
 
@@ -62,7 +60,9 @@ export function Projects({ projects, status, error, retry }: ProjectsProps) {
 
   return (
     <section className="section container" id="projects" tabIndex={-1}>
-      <SectionTitle index="04">{t("projects.title")}</SectionTitle>
+      <div className="projects-head">
+        <h2 className="section-title">{t("projects.title")}</h2>
+      </div>
 
       {projects.length >= TOOLBAR_MIN && (
         <div className="projects-toolbar">
@@ -126,7 +126,9 @@ export function Projects({ projects, status, error, retry }: ProjectsProps) {
 
       {loading ? (
         <div className="projects-loading">
-          <MoonLoader size={48} label={t("projects.scanning")} />
+          <p className="loading-text" role="status">
+            {t("projects.scanning")}
+          </p>
           <div className="projects-grid" aria-hidden="true">
             {Array.from({ length: 3 }, (_, i) => (
               <div key={i} className="project-card skeleton-card">
@@ -155,7 +157,7 @@ export function Projects({ projects, status, error, retry }: ProjectsProps) {
           ) : (
             status !== "error" && (
               <div className="empty-state">
-                <i className="fa-solid fa-meteor" aria-hidden="true" />
+                <i className="fa-solid fa-magnifying-glass" aria-hidden="true" />
                 <p>{projects.length ? t("projects.noMatch") : t("projects.noneYet")}</p>
                 {(query || category !== "all") && (
                   <button

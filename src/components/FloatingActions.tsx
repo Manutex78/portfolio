@@ -10,7 +10,7 @@ export function FloatingActions() {
   const [pastHero, setPastHero] = useState(false);
 
   useEffect(() => {
-    const hero = document.querySelector(".hero-space");
+    const hero = document.querySelector(".hero");
     if (!hero) return;
     const observer = new IntersectionObserver(([entry]) => setPastHero(!entry.isIntersecting));
     observer.observe(hero);
@@ -34,7 +34,7 @@ export function FloatingActions() {
         onClick={toggle}
         aria-label={theme === "dark" ? t("header.themeToLight") : t("header.themeToDark")}
       >
-        <i className={`fa-solid ${theme === "dark" ? "fa-moon" : "fa-sun"}`} aria-hidden="true" />
+        <i className={"fa-solid fa-circle-half-stroke"} aria-hidden="true" />
       </button>
     </div>
   );

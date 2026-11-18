@@ -1,45 +1,36 @@
-import type { CSSProperties } from "react";
+import { useMemo } from "react";
 import { skills } from "../data/content";
-import { LOGOS } from "../data/logos";
 import { useI18n } from "../i18n/LanguageContext";
-import { Reveal, SectionTitle } from "./Reveal";
+import { TechLogo } from "./TechLogo";
 
 export function Skills() {
-  const { t, l } = useI18n();
+  const { t, l, locale } = useI18n();
+  const listFormat = useMemo(() => new Intl.ListFormat(locale, { type: "conjunction" }), [locale]);
 
   return (
     <section className="section container" id="skills" tabIndex={-1}>
-      <SectionTitle index="03">{t("skills.title")}</SectionTitle>
-      <div className="skills-grid">
-        {skills.map(({ title, icon, items, main, learning }, i) => (
-          <Reveal
-            key={icon}
-            className={`skill-card${main ? " skill-card--main" : ""}${learning ? " skill-card--learning" : ""}`}
-            delay={i}
-          >
-            <h3>
-              <span className="skill-icon">
-                <i className={icon} aria-hidden="true" />
-              </span>
-              {l(title)}
-              {main && <span className="main-tag">{t("skills.main")}</span>}
-            </h3>
-            <ul className="logos">
-              {items.map((tech, index) => (
-                <li key={tech} title={tech} style={{ "--i": index } as CSSProperties}>
-                  <img
-                    src={`logos/${LOGOS[tech]}.svg`}
-                    alt={tech}
-                    width={30}
-                    height={30}
-                    loading="lazy"
-                  />
+      <div className="section-head">
+        <h2 className="section-title">{t("skills.title")}</h2>
+      </div>
+
+      <ul className="skills-grid">
+        {skills.map(({ title, icon, items, usedIn, main, learning }) => (
+          <li key={icon} className={`skill-group${main ? " skill-group--main invert" : ""}${learning ? " skill-group--learning" : ""}`}>
+            <div className="skill-head">
+              <h3>{l(title)}</h3>
+              {main && <span className="tag tag--accent">{t("skills.main")}</span>}
+              {usedIn && <p className="skill-used">{t("skills.usedIn", { projects: listFormat.format(usedIn) })}</p>}
+            </div>
+            <ul className="tech-list">
+              {items.map((tech) => (
+                <li key={tech}>
+                  <TechLogo tech={tech} />
                 </li>
               ))}
             </ul>
-          </Reveal>
+          </li>
         ))}
-      </div>
+      </ul>
     </section>
   );
 }
